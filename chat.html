@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Kampüs Akışı</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. GENEL SIFIRLAMA
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           2. MOBİL UYGULAMA ÇERÇEVESİ
+           ========================================= */
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #f8f5ee; 
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* =========================================
+           3. ÜST BAŞLIK BARI
+           ========================================= */
+        .top-header {
+            background-color: #5c704c; 
+            padding: 18px 20px 22px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* =========================================
+           4. ORTA İÇERİK ALANI
+           ========================================= */
+        .main-content {
+            flex: 1;
+            padding: 16px 16px 85px; 
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* =========================================
+           5. YENİ GÖNDERİ KUTUSU
+           ========================================= */
+        .create-post-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0e9df;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .post-input-box {
+            width: 100%;
+            height: 70px;
+            border: none;
+            outline: none;
+            resize: none;
+            font-size: 13px;
+            color: #333;
+            background: transparent;
+        }
+
+        .post-input-box::placeholder {
+            color: #999;
+        }
+
+        .create-post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f8f5ee;
+            padding-top: 10px;
+        }
+
+        .attach-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .attach-btn {
+            background-color: #f8f5ee;
+            border: 1px solid #e6cda3;
+            color: #5c704c;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s;
+        }
+
+        .attach-btn:hover {
+            background-color: #e6cda3;
+        }
+
+        .share-submit-btn {
+            background-color: #b8bc73; 
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(184, 188, 115, 0.4);
+        }
+
+        .share-submit-btn:active {
+            transform: scale(0.95);
+        }
+
+        .attachment-preview {
+            font-size: 11px;
+            color: #5c704c;
+            font-weight: 600;
+            background: #f8f5ee;
+            padding: 4px 8px;
+            border-radius: 8px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        /* =========================================
+           6. GÖNDERİ KARTLARI
+           ========================================= */
+        .post-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border: 1px solid #f0e9df;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .post-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar-circle {
+            width: 38px;
+            height: 38px;
+            background-color: #e6cda3;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            color: #5c704c;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .user-details h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.2;
+        }
+
+        .user-details span {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .post-text {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.45;
+        }
+
+        .post-image-box {
+            width: 100%;
+            max-height: 200px;
+            border-radius: 14px;
+            overflow: hidden;
+            background-color: #f8f5ee;
+        }
+
+        .post-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-music-card {
+            background: linear-gradient(135deg, #5c704c, #768a4c);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .music-icon {
+            font-size: 22px;
+        }
+
+        .music-info h5 {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .music-info p {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+
+        /* Yorum Kaldırıldı, Sadece Beğeni Kaldı */
+        .post-actions-bar {
+            display: flex;
+            gap: 20px;
+            border-top: 1px solid #f8f5ee;
+            padding-top: 8px;
+            margin-top: 2px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #777;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .action-item.liked {
+            color: #d9534f; /* Kalp Kırmızı */
+            font-weight: 700;
+        }
+
+        /* --- ALT NAVİGASYON MENÜSÜ --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f; /* Bej Alt Bar */
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .nav-link img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link.active img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+       /* Ortadaki Yeşil Yuvarlak (Ana Sayfa) Butonu */
+        .center-nav-btn {
+            position: relative;
+            top: -25px; /* Daha da yukarı fırladı */
+            width: 90px; /* Çapı büyütüldü */
+            height: 90px; /* Çapı büyütüldü */
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee; /* Sayfa zemin rengiyle aynı çerçeve */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+            
+        }
+
+        .center-nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        .center-nav-btn img {
+            width: 40px; /* İçindeki ikon daha büyük */
+            height: 40px;
+            object-fit: contain;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Kampüs Akışı</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:22px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <div class="create-post-card">
+                <textarea class="post-input-box" id="postContent" placeholder="Bugün yeşil kampüs için ne yaptın, Aleyna? 🌱"></textarea>
+                
+                <div class="attachment-preview" id="attachmentPreview" style="display: none;"></div>
+
+                <div class="create-post-actions">
+                    <div class="attach-options">
+                        <button class="attach-btn" onclick="addPhotoAttachment()">
+                            <span>📷</span> Fotoğraf
+                        </button>
+                        <button class="attach-btn" onclick="addMusicAttachment()">
+                            <span>🎵</span> Şarkı
+                        </button>
+                    </div>
+
+                    <button class="share-submit-btn" onclick="publishPost()">Paylaş</button>
+                </div>
+            </div>
+
+            <div id="feedContainer" style="display:flex; flex-direction:column; gap:16px;">
+                
+                <div class="post-card">
+                    <div class="post-user-info">
+                        <div class="avatar-circle">M</div>
+                        <div class="user-details">
+                            <h4>Merve Çelik</h4>
+                            <span>15 dakika önce • Avcılar Kampüsü</span>
+                        </div>
+                    </div>
+
+                    <p class="post-text">
+                        Kütüphane çıkışında atık şişelerimi akıllı kutuya atıp +15 Yeşil Puanımı kaptım! ♻️ Kampüsü temiz tutmak harika hissettiriyor.
+                    </p>
+
+                    <div class="post-image-box">
+                        <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80" alt="Geri Dönüşüm">
+                    </div>
+
+                    <div class="post-actions-bar">
+                        <div class="action-item" onclick="toggleLike(this, 12)">
+                            <span>❤️</span> <span class="like-count">12</span> Beğeni
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-card">
+                    <div class="post-user-info">
+                        <div class="avatar-circle">E</div>
+                        <div class="user-details">
+                            <h4>Emre Yıldız</h4>
+                            <span>1 saat önce • Ders Çalışma Odak Modu</span>
+                        </div>
+                    </div>
+
+                    <p class="post-text">
+                        2 saatlik Yeşil Odak seansı bitti. Arka planda bu akustik doğa sesini dinledim, odaklanmak için birebir! 🎧
+                    </p>
+
+                    <div class="post-music-card">
+                        <div class="music-icon">🎵</div>
+                        <div class="music-info">
+                            <h5>Deep Focus & Rain Sounds</h5>
+                            <p>Sürdürülebilir Odak Listesi • Spotify</p>
+                        </div>
+                    </div>
+
+                    <div class="post-actions-bar">
+                        <div class="action-item" onclick="toggleLike(this, 24)">
+                            <span>❤️</span> <span class="like-count">24</span> Beğeni
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link active">
+                <img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'">
+            </a>
+            <a href="skor.html" class="nav-link">
+                <img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'">
+            </a>
+            <a href="anasayfa.html" class="center-nav-btn">
+                <img src="images/ana sayfa menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'">
+            </a>
+            <a href="quiz.html" class="nav-link">
+                <img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'">
+            </a>
+            <a href="profil.html" class="nav-link">
+                <img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'">
+            </a>
+        </nav>
+
+    </div>
+
+    <script>
+        let selectedAttachment = null; 
+
+        function addPhotoAttachment() {
+            selectedAttachment = 'photo';
+            const preview = document.getElementById('attachmentPreview');
+            preview.innerText = '📷 Fotoğraf eklendi (Kampüs_Görseli.jpg)';
+            preview.style.display = 'inline-block';
+        }
+
+        function addMusicAttachment() {
+            selectedAttachment = 'music';
+            const preview = document.getElementById('attachmentPreview');
+            preview.innerText = '🎵 Şarkı eklendi (Doğa & Odak Sesleri.mp3)';
+            preview.style.display = 'inline-block';
+        }
+
+        function publishPost() {
+            const input = document.getElementById('postContent');
+            const text = input.value.trim();
+
+            if (text === '') {
+                alert('Lütfen paylaşmak için bir şeyler yazın! 😊');
+                return;
+            }
+
+            const feed = document.getElementById('feedContainer');
+            const newPost = document.createElement('div');
+            newPost.className = 'post-card';
+
+            let attachmentHTML = '';
+            if (selectedAttachment === 'photo') {
+                attachmentHTML = `
+                    <div class="post-image-box">
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=600&q=80" alt="Yeşil Kampüs Görseli">
+                    </div>
+                `;
+            } else if (selectedAttachment === 'music') {
+                attachmentHTML = `
+                    <div class="post-music-card">
+                        <div class="music-icon">🎵</div>
+                        <div class="music-info">
+                            <h5>Çevre & Doğa Müzikleri</h5>
+                            <p>Aleyna tarafından paylaşıldı • Spotify</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Yorum satırı çıkarıldı, sadece beğeni eklendi
+            newPost.innerHTML = `
+                <div class="post-user-info">
+                    <div class="avatar-circle" style="background-color:#5c704c; color:white;">A</div>
+                    <div class="user-details">
+                        <h4>Aleyna (Sen)</h4>
+                        <span>Şimdi yollandı • Yeşil Kampüs</span>
+                    </div>
+                </div>
+
+                <p class="post-text">${text}</p>
+                ${attachmentHTML}
+
+                <div class="post-actions-bar">
+                    <div class="action-item" onclick="toggleLike(this, 0)">
+                        <span>❤️</span> <span class="like-count">0</span> Beğeni
+                    </div>
+                </div>
+            `;
+
+            feed.prepend(newPost);
+            input.value = '';
+            selectedAttachment = null;
+            document.getElementById('attachmentPreview').style.display = 'none';
+        }
+
+        function toggleLike(element, initialCount) {
+            const countSpan = element.querySelector('.like-count');
+            let currentLikes = parseInt(countSpan.innerText);
+
+            if (element.classList.contains('liked')) {
+                element.classList.remove('liked');
+                countSpan.innerText = currentLikes - 1;
+            } else {
+                element.classList.add('liked');
+                countSpan.innerText = currentLikes + 1;
+            }
+        }
+    </script>
+</body>
+</html>
