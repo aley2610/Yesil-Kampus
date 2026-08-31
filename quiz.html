@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Çevre Quizi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. GENEL SIFIRLAMA
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           2. MOBİL UYGULAMA ÇERÇEVESİ
+           ========================================= */
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #f8f5ee; 
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* =========================================
+           3. ÜST BAŞLIK BARI
+           ========================================= */
+        .top-header {
+            background-color: #5c704c; 
+            padding: 18px 20px 22px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* =========================================
+           4. ORTA İÇERİK ALANI
+           ========================================= */
+        .main-content {
+            flex: 1;
+            padding: 20px 20px 85px; 
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* =========================================
+           5. GÜNÜN SORUSU KARTI
+           ========================================= */
+        .daily-question-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e6cda3;
+        }
+
+        .card-badge {
+            background-color: #f4cc3a;
+            color: #333;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: #f8f5ee;
+            border: 1px solid #dcd7ce;
+            padding: 12px 15px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 500;
+            color: #444;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background-color: #e6cda3;
+            border-color: #d8bd93;
+        }
+
+        .option-btn.correct {
+            background-color: #5cb85c !important;
+            color: white !important;
+            border-color: #4cae4c !important;
+        }
+
+        .option-btn.wrong {
+            background-color: #d9534f !important;
+            color: white !important;
+            border-color: #d43f3a !important;
+        }
+
+        .feedback-text {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #5c704c;
+            font-weight: 500;
+            display: none; 
+            background-color: rgba(92, 112, 76, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #5c704c;
+        }
+
+        /* =========================================
+           6. MİNİ QUİZ BAŞLATMA ALANI
+           ========================================= */
+        .mini-quiz-card {
+            background: linear-gradient(135deg, #5c704c, #768a4c);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(92, 112, 76, 0.3);
+        }
+
+        .mini-quiz-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .mini-quiz-card p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .start-quiz-btn {
+            background-color: #f4cc3a;
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+
+        .start-quiz-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Mini Quiz Aktif Olduğunda Görünecek Kısım */
+        #activeQuizArea {
+            display: none; 
+        }
+
+         /* --- ALT NAVİGASYON MENÜSÜ --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f; /* Bej Alt Bar */
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .nav-link img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link.active img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+       /* Ortadaki Yeşil Yuvarlak (Ana Sayfa) Butonu */
+        .center-nav-btn {
+            position: relative;
+            top: -25px; /* Daha da yukarı fırladı */
+            width: 90px; /* Çapı büyütüldü */
+            height: 90px; /* Çapı büyütüldü */
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee; /* Sayfa zemin rengiyle aynı çerçeve */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+            
+        }
+
+        .center-nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        .center-nav-btn img {
+            width: 40px; /* İçindeki ikon daha büyük */
+            height: 40px;
+            object-fit: contain;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Çevre Quizi</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:22px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <div class="daily-question-card" id="dailyQuestionCard">
+                <div class="card-badge">⭐ Günün Sorusu (+50 YP)</div>
+                <div class="question-text">
+                    Aşağıdakilerden hangisi karbon ayak izinizi azaltmanın en etkili yoludur?
+                </div>
+                
+                <div class="options-list">
+                    <button class="option-btn" onclick="answerDaily(this, false)">A) Suyu kaynatıp soğumaya bırakmak</button>
+                    <button class="option-btn" onclick="answerDaily(this, true)">B) Kampüse bisikletle veya yürüyerek gelmek</button>
+                    <button class="option-btn" onclick="answerDaily(this, false)">C) Tüm elektronik aletleri bekleme modunda tutmak</button>
+                </div>
+
+                <div class="feedback-text" id="dailyFeedback"></div>
+            </div>
+
+            <div class="mini-quiz-card" id="quizStarterCard">
+                <h3>Bilgini Sına! 🧠</h3>
+                <p>10 soruluk mini quiz ile sürdürülebilirlik seviyeni ölç ve ekstra yeşil puan kazan.</p>
+                <button class="start-quiz-btn" onclick="startMiniQuiz()">Mini Quizi Başlat</button>
+            </div>
+
+            <div id="activeQuizArea">
+                <div class="daily-question-card">
+                    <div class="card-badge" style="background-color:#b8bc73; color:white;">Soru 1 / 10</div>
+                    <div class="question-text">
+                        Geri dönüştürülebilen bir cam şişe doğada kaç yılda yok olur?
+                    </div>
+                    
+                    <div class="options-list">
+                        <button class="option-btn" onclick="answerQuiz(this, false)">A) 100 Yıl</button>
+                        <button class="option-btn" onclick="answerQuiz(this, false)">B) 1000 Yıl</button>
+                        <button class="option-btn" onclick="answerQuiz(this, true)">C) 4000 Yıl</button>
+                    </div>
+
+                    <div class="feedback-text" id="quizFeedback"></div>
+                </div>
+                
+                <button class="start-quiz-btn" style="width:100%; margin-top:15px; display:none;" id="nextQuestionBtn" onclick="alert('Excel bağlandığında sıradaki soruya geçecek!')">Sıradaki Soru ➡️</button>
+            </div>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link">
+                <img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'">
+            </a>
+            <a href="skor.html" class="nav-link">
+                <img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'">
+            </a>
+            <a href="anasayfa.html" class="center-nav-btn">
+                <img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'">
+            </a>
+            <a href="quiz.html" class="nav-link active">
+                <img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'">
+            </a>
+            <a href="profil.html" class="nav-link">
+                <img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'">
+            </a>
+        </nav>
+
+    </div>
+
+    <script>
+        // Günün Sorusu Cevaplama
+        function answerDaily(btn, isCorrect) {
+            if(document.getElementById('dailyFeedback').style.display === 'block') return;
+
+            const buttons = btn.parentElement.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.style.pointerEvents = 'none');
+
+            const feedback = document.getElementById('dailyFeedback');
+            feedback.style.display = 'block';
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedback.innerHTML = "<b>Tebrikler! Doğru Cevap. 🎉</b><br>Araç yerine bisiklet/yürüyüş tercih etmek karbon salınımını doğrudan sıfırlar. (+50 YP Kazandın)";
+            } else {
+                btn.classList.add('wrong');
+                feedback.innerHTML = "<b>Yanlış Cevap. 😔</b><br>Doğru cevap B şıkkıydı. Araç yerine bisiklet/yürüyüş tercih etmek karbon salınımını doğrudan sıfırlar.";
+                feedback.style.color = "#d9534f";
+                feedback.style.borderLeftColor = "#d9534f";
+                feedback.style.backgroundColor = "rgba(217, 83, 79, 0.1)";
+            }
+        }
+
+        // Mini Quiz Başlatma (Günün Sorusunu da Gizler)
+        function startMiniQuiz() {
+            document.getElementById('dailyQuestionCard').style.display = 'none'; // GÜNÜN SORUSU GİZLENDİ!
+            document.getElementById('quizStarterCard').style.display = 'none'; // BAŞLANGIÇ KARTI GİZLENDİ!
+            document.getElementById('activeQuizArea').style.display = 'block'; // MİNİ QUİZ GÖSTERİLDİ!
+        }
+
+        // Mini Quiz Cevaplama
+        function answerQuiz(btn, isCorrect) {
+            if(document.getElementById('quizFeedback').style.display === 'block') return;
+
+            const buttons = btn.parentElement.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.style.pointerEvents = 'none');
+
+            const feedback = document.getElementById('quizFeedback');
+            feedback.style.display = 'block';
+            document.getElementById('nextQuestionBtn').style.display = 'block'; 
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedback.innerHTML = "<b>Doğru! ♻️</b><br>Cam şişelerin doğada tamamen çözünmesi 4000 yıl sürebilir. Bu yüzden geri dönüşümleri çok önemlidir.";
+            } else {
+                btn.classList.add('wrong');
+                feedback.innerHTML = "<b>Yanlış. ❌</b><br>Doğru cevap C şıkkıydı. Cam şişelerin doğada tamamen çözünmesi 4000 yıl sürebilir.";
+                feedback.style.color = "#d9534f";
+                feedback.style.borderLeftColor = "#d9534f";
+                feedback.style.backgroundColor = "rgba(217, 83, 79, 0.1)";
+            }
+        }
+    </script>
+</body>
+</html>

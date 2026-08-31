@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Merdiven Kullanımı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           GENEL AYARLAR VE SIFIRLAMA
+           Tüm elemanların boşluklarını sıfırlar.
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333; /* Bilgisayarda arka planın koyu durması için */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           MOBİL UYGULAMA ÇERÇEVESİ
+           Uygulama arka plan rengi (#f8f5ee - Krem/Bej)
+           ========================================= */
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px; /* Telefon ekranı genişliği sınırı */
+            height: 100vh;
+            max-height: 850px;
+            background-color: #f8f5ee; /* Krem Zemin */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* =========================================
+           ÜST YEŞİL BAŞLIK BARI (Header)
+           ========================================= */
+        .top-header {
+            background-color: #5c704c; /* Zeytin Yeşili */
+            padding: 20px 20px 25px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Geri Dön Butonu (anasayfa.html'e Yönlendirir) */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Sayfa Başlığı */
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        /* Sağ Üst Logo */
+        .header-logo {
+            width: 38px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* =========================================
+           ORTA İÇERİK ALANI
+           ========================================= */
+        .main-content {
+            flex: 1;
+            padding: 25px 20px 80px; /* Alt navigasyon barı için 80px boşluk */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* =========================================
+           MERDİVEN QR KART ALANI
+           ========================================= */
+        .qr-card {
+            background-color: #ffffff;
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            border: 1px solid #f0e9df;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .qr-title {
+            color: #5c704c;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* QR Kodu Görsel Kutusu */
+        .qr-image-box {
+            width: 190px;
+            height: 190px;
+            background-color: #f8f5ee;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 2px dashed #b8bc73; /* Tatlı kesikli çizgi çerçevesi */
+        }
+
+        .qr-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .qr-info-text {
+            font-size: 12px;
+            color: #555;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* =========================================
+           MERDİVEN KULLANIM İSTATİSTİK KARTLARI
+           ========================================= */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .stat-box {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            border: 1px solid #f0e9df;
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            background-color: #e6cda3; /* Yumuşak Bej İkon Kutusu */
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .stat-info-title {
+            font-size: 11px;
+            color: #777;
+            font-weight: 500;
+        }
+
+        .stat-info-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #5c704c;
+        }
+
+        /* =========================================
+           ALT BİLGİ VE MOTİVASYON KUTUSU
+           ========================================= */
+        .motivation-card {
+            background: linear-gradient(135deg, #5c704c, #768a4c);
+            color: #ffffff;
+            border-radius: 18px;
+            padding: 16px 18px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 4px 12px rgba(92, 112, 76, 0.2);
+        }
+
+        .motivation-icon {
+            font-size: 28px;
+        }
+
+        .motivation-text h4 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .motivation-text p {
+            font-size: 11px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        /* --- ALT NAVİGASYON MENÜSÜ --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f; /* Bej Alt Bar */
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .nav-link img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link.active img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+       /* Ortadaki Yeşil Yuvarlak (Ana Sayfa) Butonu */
+        .center-nav-btn {
+            position: relative;
+            top: -25px; /* Daha da yukarı fırladı */
+            width: 90px; /* Çapı büyütüldü */
+            height: 90px; /* Çapı büyütüldü */
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee; /* Sayfa zemin rengiyle aynı çerçeve */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+            
+        }
+
+        .center-nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        .center-nav-btn img {
+            width: 40px; /* İçindeki ikon daha büyük */
+            height: 40px;
+            object-fit: contain;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+
+            <h1 class="header-title">Merdiven QR</h1>
+
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:24px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <div class="qr-card">
+                <div class="qr-title">Adımlarını Enerjiye Dönüştür! 🪜</div>
+                
+                <div class="qr-image-box">
+                    <img src="images/merdiven_qr.png" alt="Merdiven QR Kodu" onerror="this.outerHTML='<div style=\'width:100%; height:100%; background:#f8f5ee; display:flex; align-items:center; justify-content:center; color:#5c704c; font-size:12px; text-align:center; padding:10px; font-weight:600;\'>Merdiven QR Kodu<br>(images/merdiven_qr.png)</div>'">
+                </div>
+
+                <p class="qr-info-text">
+                    Fakülte ve bina girişlerindeki merdiven noktalarında bulunan <b>QR kodları</b> tarat, asansör yerine merdiven kullanarak enerji tasarrufuna katkı sağla ve puan kazan!
+                </p>
+            </div>
+
+            <div class="stats-grid">
+                
+                <div class="stat-box">
+                    <div class="stat-icon">⭐</div>
+                    <div>
+                        <div class="stat-info-title">Kat Başına</div>
+                        <div class="stat-info-value">+15 YP</div>
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-icon">⚡</div>
+                    <div>
+                        <div class="stat-info-title">Elektrik</div>
+                        <div class="stat-info-value">0.05 kWh</div>
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-icon">🌱</div>
+                    <div>
+                        <div class="stat-info-title">Karbon Salınımı</div>
+                        <div class="stat-info-value">-25g CO₂</div>
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-icon">🔥</div>
+                    <div>
+                        <div class="stat-info-title">Yakılan Kalori</div>
+                        <div class="stat-info-value">~10 kcal</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="motivation-card">
+                <div class="motivation-icon">💡</div>
+                <div class="motivation-text">
+                    <h4>Biliyor muydunuz?</h4>
+                    <p>Kampüste günde 3 kat merdiven çıkmak, yıllık ortalama 45 kg karbon salınımının önüne geçer!</p>
+                </div>
+            </div>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link">
+                <img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:22px\'>💬</span>'">
+            </a>
+
+            <a href="skor.html" class="nav-link">
+                <img src="images/skor tablosu menu.png" alt="Skor Tablosu" onerror="this.outerHTML='<span style=\'font-size:22px\'>🏆</span>'">
+            </a>
+
+            <a href="anasayfa.html" class="center-nav-btn">
+                <img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:32px\'>🏠</span>'">
+            </a>
+
+            <a href="quiz.html" class="nav-link">
+                <img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:22px\'>❓</span>'">
+            </a>
+
+            <a href="profil.html" class="nav-link">
+                <img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:22px\'>👤</span>'">
+            </a>
+        </nav>
+
+    </div>
+
+</body>
+</html>

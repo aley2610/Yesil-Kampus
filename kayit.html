@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Kayıt Ol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #5c704c;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- DEKORATİF ŞEKİLLER --- */
+        .shape-top-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110px;
+            height: 130px;
+            background-color: #f4cc3a;
+            border-bottom-right-radius: 60px;
+            z-index: 1;
+        }
+
+        .shape-top-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 160px;
+            background-color: #e6cda3;
+            border-bottom-left-radius: 80px;
+            z-index: 1;
+        }
+
+        .shape-bottom-left {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 130px;
+            height: 90px;
+            background-color: #e6cda3;
+            border-top-right-radius: 70px;
+            z-index: 1;
+        }
+
+        /* --- İÇERİK ALANI --- */
+        .content {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 42px; /* 42px kenar boşluğu ile daraltıldı */
+            justify-content: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: -10px;
+        }
+
+        .logo-icon {
+            font-size: 40px;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        /* --- FORM ALANI (4 Kutucuk Sığsın Diye Dengelendi) --- */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            padding-left: 4px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 44px; /* Yükseklik 44px yapıldı */
+            background-color: #f8f5ee;
+            border: none;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .form-group input:focus {
+            box-shadow: 0 0 0 2px rgba(244, 204, 58, 0.5);
+        }
+
+        /* --- BUTON --- */
+        .register-btn {
+            width: 100%;
+            height: 46px;
+            background-color: #b8bc73;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .register-btn:active {
+            transform: scale(0.97);
+            background-color: #a3a763;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 18px;
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .login-link a {
+            color: #ffffff;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="shape-top-left"></div>
+        <div class="shape-top-right"></div>
+        <div class="shape-bottom-left"></div>
+
+        <div class="content">
+            <div class="header">
+                <div class="logo-icon">🌱</div>
+                <h1>Yeşil Kampüs</h1>
+                <p>Sürdürülebilir bir gelecek için ilk adımı at</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); window.location.href='index.html';">
+                <div class="form-group">
+                    <label>E-posta Adresi</label>
+                    <input type="email" placeholder="ogr@iuc.edu.tr" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Kullanıcı Adı</label>
+                    <input type="text" placeholder="Aleyna" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <input type="password" placeholder="********" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Şifre Tekrar</label>
+                    <input type="password" placeholder="********" required>
+                </div>
+
+                <button type="submit" class="register-btn">Kayıt Ol</button>
+            </form>
+
+            <div class="login-link">
+                Zaten hesabın var mı? <a href="index.html">Giriş Yap</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

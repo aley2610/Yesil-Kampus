@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - GPS Yürüyüş Takibi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <style>
+        /* --- GENEL SIFIRLAMA --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- MOBİL ÇERÇEVE (TAŞMALARI ÖNLEYEN YAPI) --- */
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #f8f5ee; /* Açık Krem Zemin */
+            overflow: hidden; /* Dışarı taşmaları engeller */
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- ÜST BAŞLIK BARI (Zeytin Yeşili Header) --- */
+        .top-header {
+            background-color: #5c704c;
+            padding: 18px 20px 22px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            flex-shrink: 0; /* Header'ın küçülmesini engeller */
+            z-index: 10;
+        }
+
+        /* Geri Dön Butonu */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* --- ORTA İÇERİK ALANI (KAYDIRILABİLİR & DÜZGÜN BOŞLUKLU) --- */
+        .main-content {
+            flex: 1;
+            padding: 16px 20px 90px; /* Alt menünün altında kalmaması için alt boşluk artırıldı */
+            overflow-y: auto; /* Sadece içerik kaydırılır */
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* --- HARİTA KUTUSU --- */
+        .map-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0e9df;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 210px; /* Telefona tam oturan yükseklik */
+            z-index: 1;
+        }
+
+        /* Canlı Durum Etiketi */
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #5c704c;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #d9534f; /* Bekliyor - Kırmızı */
+            border-radius: 50%;
+        }
+
+        .status-dot.active {
+            background-color: #5cb85c; /* Aktif - Yeşil */
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        /* --- 3'LÜ İSTATİSTİK KARTLARI --- */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .stat-box {
+            background-color: #ffffff;
+            border-radius: 14px;
+            padding: 10px 6px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+            border: 1px solid #f0e9df;
+        }
+
+        .stat-icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #777;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: #5c704c;
+            margin-top: 2px;
+        }
+
+        /* --- BAŞLAT / BİTİR BUTONU --- */
+        .start-btn {
+            width: 100%;
+            height: 48px;
+            background-color: #b8bc73; /* Fıstık Yeşili */
+            color: #ffffff;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(184, 188, 115, 0.35);
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .start-btn:active {
+            transform: scale(0.97);
+        }
+
+        .start-btn.recording {
+            background-color: #d9534f; /* Durdur - Kırmızı */
+            box-shadow: 0 4px 10px rgba(217, 83, 79, 0.35);
+        }
+
+        /* --- BİLGİ KUTUSU --- */
+        .info-card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 12px 14px;
+            border-left: 4px solid #5c704c;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .info-card-icon {
+            font-size: 22px;
+        }
+
+        .info-card-text h4 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1px;
+        }
+
+        .info-card-text p {
+            font-size: 10px;
+            color: #666;
+            line-height: 1.35;
+        }
+
+        /* --- ALT NAVİGASYON MENÜSÜ --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f; /* Bej Alt Bar */
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .nav-link img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link.active img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+       /* Ortadaki Yeşil Yuvarlak (Ana Sayfa) Butonu */
+        .center-nav-btn {
+            position: relative;
+            top: -25px; /* Daha da yukarı fırladı */
+            width: 90px; /* Çapı büyütüldü */
+            height: 90px; /* Çapı büyütüldü */
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee; /* Sayfa zemin rengiyle aynı çerçeve */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+            
+        }
+
+        .center-nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        .center-nav-btn img {
+            width: 40px; /* İçindeki ikon daha büyük */
+            height: 40px;
+            object-fit: contain;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">GPS Takip</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:22px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <div class="map-card">
+                <div class="status-badge">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Bekliyor</span>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-icon">📍</div>
+                    <div class="stat-label">Mesafe</div>
+                    <div class="stat-value" id="distVal">0.00 km</div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-label">Süre</div>
+                    <div class="stat-value" id="timeVal">00:00</div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-icon">🌿</div>
+                    <div class="stat-label">Kazanılan</div>
+                    <div class="stat-value" id="pointVal">+0 YP</div>
+                </div>
+            </div>
+
+            <button class="start-btn" id="toggleBtn" onclick="toggleTracking()">
+                <span>▶</span> Yürüyüşü Başlat
+            </button>
+
+            <div class="info-card">
+                <div class="info-card-icon">🚲</div>
+                <div class="info-card-text">
+                    <h4>Sürdürülebilir Ulaşım</h4>
+                    <p>Yürüyerek karbon ayak izini azalt ve kampüs puanlarını topla!</p>
+                </div>
+            </div>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link">
+                <img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'">
+            </a>
+
+            <a href="skor.html" class="nav-link">
+                <img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'">
+            </a>
+
+            <a href="anasayfa.html" class="center-nav-btn">
+                <img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'">
+            </a>
+
+            <a href="quiz.html" class="nav-link">
+                <img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'">
+            </a>
+
+            <a href="profil.html" class="nav-link">
+                <img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'">
+            </a>
+        </nav>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Harita Başlatma Koordinatları
+        const lat = 40.9855;
+        const lng = 28.7245;
+        
+        const map = L.map('map', { zoomControl: false }).setView([lat, lng], 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const customIcon = L.divIcon({
+            className: 'custom-pin',
+            html: '<div style="background-color:#5c704c; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 0 6px rgba(0,0,0,0.4);"></div>',
+            iconSize: [18, 18]
+        });
+
+        const marker = L.marker([lat, lng], {icon: customIcon}).addTo(map);
+
+        // Sayaç ve Takip Mantığı
+        let isTracking = false;
+        let timer = null;
+        let seconds = 0;
+        let distance = 0;
+        let points = 0;
+
+        function toggleTracking() {
+            const btn = document.getElementById('toggleBtn');
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+
+            if (!isTracking) {
+                isTracking = true;
+                btn.classList.add('recording');
+                btn.innerHTML = '<span>⏹</span> Yürüyüşü Bitir';
+                dot.classList.add('active');
+                text.innerText = 'Canlı Takip';
+
+                timer = setInterval(() => {
+                    seconds++;
+                    distance += 0.0012;
+                    points = Math.floor(distance * 25);
+
+                    const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+                    const secs = String(seconds % 60).padStart(2, '0');
+                    document.getElementById('timeVal').innerText = `${mins}:${secs}`;
+                    document.getElementById('distVal').innerText = `${distance.toFixed(2)} km`;
+                    document.getElementById('pointVal').innerText = `+${points} YP`;
+                }, 1000);
+
+            } else {
+                isTracking = false;
+                clearInterval(timer);
+                btn.classList.remove('recording');
+                btn.innerHTML = '<span>▶</span> Yürüyüşü Başlat';
+                dot.classList.remove('active');
+                text.innerText = 'Tamamlandı';
+
+                alert(`Tebrikler! Yürüyüşün kaydedildi 🎉\nKazanılan Puan: +${points} YP`);
+            }
+        }
+    </script>
+</body>
+</html>
