@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Kampüs Akışı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           1. GENEL SIFIRLAMA VE TEMEL AYARLAR
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333; /* Bilgisayarda telefon dışındaki alanın koyu görünmesi için */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           2. MOBİL ÇERÇEVE (Krem / Bej Zemin)
+           ========================================= */
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #f8f5ee; /* Açık Krem Zemin */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* =========================================
+           3. ÜST BAŞLIK BARI (Zeytin Yeşili Header)
+           ========================================= */
+        .top-header {
+            background-color: #5c704c; /* Zeytin Yeşili */
+            padding: 18px 20px 22px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        /* Geri Dön (Ok) Butonu */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* =========================================
+           4. ORTA İÇERİK ALANI (Kampüs Akışı)
+           ========================================= */
+            .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 100px; /* Alt menü taşmasın diye */
+            display: flex;
+            flex-direction: column;
+            gap: 20px; 
+        }
+
+        .chat-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border: 1px solid #f0e9df;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        
+        .post-input {
+            width: 100%; height: 50px; border: none; outline: none; resize: none;
+            font-size: 14px; font-weight: 600; color: #5c704c; background: transparent;
+        }
+        .post-input::placeholder { color: #a4b27d; }
+        
+        .chat-divider { height: 1px; background-color: #f0e9df; margin: 5px 0; }
+        
+        .action-row { display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn-light {
+            background-color: #f8f5ee; color: #5c704c; border: none; padding: 10px 15px;
+            border-radius: 15px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-dark {
+            background-color: #5c704c; color: white; border: none; padding: 10px 25px;
+            border-radius: 15px; font-size: 14px; font-weight: 700; cursor: pointer;
+        }
+
+        .post-header { display: flex; align-items: center; gap: 12px; }
+        .avatar {
+            width: 45px; height: 45px; background-color: #f2e3c6; color: #5c704c;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: 700;
+        }
+        .user-info h4 { color: #5c704c; font-size: 15px; margin-bottom: 2px; }
+        .user-info span { color: #a4b27d; font-size: 11px; font-weight: 500; }
+        .post-text { color: #333; font-size: 14px; font-weight: 500; line-height: 1.5; }
+        .like-bar {
+            border-top: 1px solid #f0e9df; padding-top: 12px; font-size: 14px; font-weight: 700; color: #a4b27d;
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+        }
+        
+        /* 3. KART TASARIMLARI (Bembeyaz ve yuvarlak köşeli) */
+        .chat-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border: 1px solid #f0e9df;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        
+        .post-input {
+            width: 100%; height: 50px; border: none; outline: none; resize: none;
+            font-size: 14px; font-weight: 600; color: #5c704c; background: transparent;
+        }
+        .post-input::placeholder { color: #a4b27d; }
+        
+        .chat-divider { height: 1px; background-color: #f0e9df; margin: 5px 0; }
+        
+        .action-row { display: flex; justify-content: space-between; align-items: center; }
+        .btn-light {
+            background-color: #f8f5ee; color: #5c704c; border: none; padding: 10px 15px;
+            border-radius: 15px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-dark {
+            background-color: #5c704c; color: white; border: none; padding: 10px 25px;
+            border-radius: 15px; font-size: 14px; font-weight: 700; cursor: pointer;
+        }
+
+        /* Gönderi Kartı Detayları */
+        .post-header { display: flex; align-items: center; gap: 12px; }
+        .avatar {
+            width: 45px; height: 45px; background-color: #f2e3c6; color: #5c704c;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: 700;
+        }
+        .user-info h4 { color: #5c704c; font-size: 15px; margin-bottom: 2px; }
+        .user-info span { color: #a4b27d; font-size: 11px; font-weight: 500; }
+        .post-text { color: #333; font-size: 14px; font-weight: 500; line-height: 1.5; }
+        .like-bar {
+            border-top: 1px solid #f0e9df; padding-top: 12px; font-size: 14px; font-weight: 700; color: #a4b27d;
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+        }
+
+         /* --- ALT NAVİGASYON MENÜSÜ --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f; /* Bej Alt Bar */
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .nav-link img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link.active img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+       /* Ortadaki Yeşil Yuvarlak (Ana Sayfa) Butonu */
+        .center-nav-btn {
+            position: relative;
+            top: -25px; /* Daha da yukarı fırladı */
+            width: 90px; /* Çapı büyütüldü */
+            height: 90px; /* Çapı büyütüldü */
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee; /* Sayfa zemin rengiyle aynı çerçeve */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+            
+        }
+
+        .center-nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        .center-nav-btn img {
+            width: 40px; /* İçindeki ikon daha büyük */
+            height: 40px;
+            object-fit: contain;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- ÜST BAŞLIK -->
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <span class="header-title">Kampüs Akışı</span>
+            
+            <!-- Hamburger menü yerine Logo geldi, tıklayınca yine menüyü açacak! -->
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+        </header>
+
+       <!-- ORTA İÇERİK -->
+        <main class="content-area">
+            
+            <!-- Paylaşım Kartı -->
+            <div class="chat-card">
+                <!-- DİKKAT: Artık burada readonly YOK, doya doya yazı yazabilirsin -->
+                <textarea id="postContent" class="post-input" placeholder="Bugün yeşil kampüs için ne yaptın? 🌱"></textarea>
+                
+                <div class="chat-divider"></div>
+                
+                <!-- Gizli Input ve Önizleme Alanı -->
+                <div id="attachmentPreview" class="attachment-preview"></div>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                
+                <div class="action-row">
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-light" onclick="addPhotoAttachment()">📷 Foto</button>
+                        <button class="btn-light" onclick="addMusicAttachment()">🎵 Şarkı</button>
+                    </div>
+                    <button class="btn-dark" onclick="publishPost()">Paylaş</button>
+                </div>
+            </div>
+
+            <!-- AKIŞ KUTUSU (Paylaştıkların Buraya Düşecek) -->
+            <div id="feedContainer" style="width: 100%;">
+                
+                <!-- Örnek Gönderi -->
+                <div class="chat-card">
+                    <div class="post-header">
+                        <div class="avatar">M</div>
+                        <div class="user-info">
+                            <h4>Merve Çelik</h4>
+                            <span>15 dakika önce • Avcılar Kampüsü</span>
+                        </div>
+                    </div>
+                    <div class="post-text">
+                        Kütüphane çıkışında atık şişelerimi akıllı kutuya atıp +15 Yeşil Puanımı kaptım! ♻️
+                    </div>
+                    <div class="like-bar" onclick="toggleLike(this)">
+                        <span class="heart" style="color: #E74C3C; font-size: 18px;">❤️</span> <span class="like-count">12</span> Beğeni
+                    </div>
+                </div>
+
+            </div>
+
+             <!-- ALT MENÜ -->
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link active">
+                <img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'">
+            </a>
+
+            <a href="skor.html" class="nav-link">
+                <img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'">
+            </a>
+
+            <a href="anasayfa.html" class="center-nav-btn">
+                <img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'">
+            </a>
+
+            <a href="quiz.html" class="nav-link">
+                <img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'">
+            </a>
+
+            <a href="profil.html" class="nav-link">
+                <img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'">
+            </a>
+        </nav>
+
+        </main>
+
+
+    </div>
+
+   
+
+    <!-- SAYFAYA ÖZEL İŞLEVLER VE FİREBASE BAĞLANTISI -->
+    <script type="module">
+        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Kimlik Bilgileri
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+            authDomain: "yesilkampus-iuc.firebaseapp.com",
+            projectId: "yesilkampus-iuc",
+            storageBucket: "yesilkampus-iuc.firebasestorage.app",
+            messagingSenderId: "555123910788",
+            appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        let app;
+        try { app = initializeApp(firebaseConfig); } 
+        catch (e) { app = getApp(); }
+        const db = getFirestore(app);
+        
+        const activeUser = localStorage.getItem("kampusUser") || "Aleyna";
+
+        // 1. Dinamik İsmi Çekme
+        document.addEventListener("DOMContentLoaded", () => {
+            const input = document.getElementById("postContent");
+            if(input) input.placeholder = `Bugün yeşil kampüs için ne yaptın, ${activeUser}? 🌱`;
+            loadPosts(); // Sayfa açılınca gönderileri yükle
+        });
+
+        window.selectedImageSrc = null; 
+        window.selectedYoutubeLink = null;
+
+        // 2. Galeri İzni
+        window.addPhotoAttachment = function() {
+            const fileInput = document.getElementById('imageInput');
+            if(fileInput) fileInput.click();
+        }
+
+        const imageInput = document.getElementById('imageInput');
+        if(imageInput) {
+            imageInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        window.selectedImageSrc = event.target.result;
+                        window.selectedYoutubeLink = null; 
+                        const preview = document.getElementById('attachmentPreview');
+                        if(preview) {
+                            preview.innerText = '📷 Galeriden fotoğraf seçildi!';
+                            preview.style.display = 'block';
+                        }
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+
+        // 3. YouTube İzni
+        window.addMusicAttachment = function() {
+            const ytLink = prompt("Şarkının YouTube linkini yapıştır:\n(Örn: https://www.youtube.com/watch?v=...)");
+            if (ytLink && (ytLink.includes("youtube.com") || ytLink.includes("youtu.be"))) {
+                window.selectedYoutubeLink = ytLink;
+                window.selectedImageSrc = null; 
+                const preview = document.getElementById('attachmentPreview');
+                if(preview) {
+                    preview.innerText = '🎵 YouTube şarkısı eklendi!';
+                    preview.style.display = 'block';
+                }
+            } else if (ytLink) {
+                alert("Geçerli bir YouTube linki girmelisin bebeğim!");
+            }
+        }
+
+        // 4. Gönderileri Buluttan Yükleme
+        window.loadPosts = async function() {
+            const feed = document.getElementById('feedContainer');
+            if(!feed) return;
+            feed.innerHTML = ""; // Listeyi temizle
+
+            const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+            const querySnapshot = await getDocs(q);
+            
+            // Profil Fotoğrafını Hafızadan Çek
+            const myPhoto = localStorage.getItem("profilePhotoBase64");
+
+            querySnapshot.forEach((docSnap) => {
+                const post = docSnap.data();
+                const postId = docSnap.id;
+                
+                const newPost = document.createElement('div');
+                newPost.className = 'chat-card';
+
+                let attachmentHTML = '';
+                if (post.image) {
+                    attachmentHTML = `<div style="width: 100%; max-height: 200px; border-radius: 12px; overflow: hidden; margin-top: 10px;"><img src="${post.image}" style="width: 100%; height: 100%; object-fit: cover;"></div>`;
+                } else if (post.youtube) {
+                    const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/gi;
+                    const match = ytRegex.exec(post.youtube);
+                    if (match && match[1]) {
+                        attachmentHTML = `<div style="margin-top: 10px; border-radius: 12px; overflow: hidden;"><iframe width="100%" height="200" src="https://www.youtube.com/embed/${match[1]}" frameborder="0" allowfullscreen></iframe></div>`;
+                    }
+                }
+
+                let deleteBtnHTML = post.author === activeUser 
+                    ? `<button onclick="deletePost('${postId}')" style="background:none; border:none; color:#E74C3C; font-weight:bold; font-size:12px; cursor:pointer;">🗑️ Sil</button>` 
+                    : ``;
+
+                // 🌟 SİHİRLİ DOKUNUŞ: Avatar Kontrol Sistemi
+                let avatarContent = post.author.charAt(0).toUpperCase(); // Varsayılan olarak baş harf
+                
+                if (post.author === activeUser && myPhoto) {
+                    // 1. Gönderi seninse senin fotoğrafın
+                    avatarContent = `<img src="${myPhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                } else if (post.author === "Yeşil Kampüs Muhafızı") {
+                    // 2. Gönderi Muhafızınsa o yüklediğin özel fotoğraf!
+                    avatarContent = `<img src="images/yeşil muhafız.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
+
+                newPost.innerHTML = `
+                    <div class="post-header" style="display: flex; justify-content: space-between;">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <div class="avatar">${avatarContent}</div>
+                            <div class="user-info">
+                                <h4>${post.author}</h4>
+                                <span>Yeşil Kampüs</span>
+                            </div>
+                        </div>
+                        ${deleteBtnHTML}
+                    </div>
+                    <div class="post-text" style="margin-top: 5px;">${post.text}</div>
+                    ${attachmentHTML}
+                    <div class="like-bar" onclick="toggleLike(this)">
+                        <span class="heart" style="color: #E74C3C; font-size: 18px;">🤍</span> <span class="like-count">0</span> Beğeni
+                    </div>
+                `;
+                feed.appendChild(newPost);
+            });
+        }
+
+        // 5. Gönderiyi Paylaşma (Buluta Kayıt) - EKSİK OLAN KISIM TAMAMLANDI!
+        window.publishPost = async function() {
+            const inputEl = document.getElementById('postContent');
+            const text = inputEl ? inputEl.value.trim() : "";
+
+            if (text === '' && !window.selectedImageSrc && !window.selectedYoutubeLink) {
+                alert('Lütfen paylaşmak için bir şeyler yaz veya medya ekle! 😊');
+                return;
+            }
+
+            try {
+                // Gönderiyi Firebase'e Yolluyoruz
+                await addDoc(collection(db, "posts"), {
+                    author: activeUser,
+                    text: text,
+                    image: window.selectedImageSrc || null,
+                    youtube: window.selectedYoutubeLink || null,
+                    timestamp: serverTimestamp()
+                });
+
+                // Başarılı olunca kutuları temizle
+                if(inputEl) inputEl.value = '';
+                window.selectedImageSrc = null;
+                window.selectedYoutubeLink = null;
+                const preview = document.getElementById('attachmentPreview');
+                if(preview) preview.style.display = 'none';
+
+                // Akışı yenile ki attığın post anında ekrana düşsün!
+                loadPosts();
+
+            } catch (error) {
+                console.error("Hata:", error);
+                alert("Gönderi paylaşılamadı! İnternet bağlantını kontrol et.");
+            }
+        }
+
+        // 6. Gönderi Silme Fonksiyonu
+        window.deletePost = async function(postId) {
+            if(confirm("Bu gönderiyi silmek istediğine emin misin?")) {
+                await deleteDoc(doc(db, "posts", postId));
+                loadPosts(); // Silindikten sonra listeyi güncelle
+            }
+        }
+
+        // 7. Beğeni İşlemi
+        window.toggleLike = function(element) {
+            const countSpan = element.querySelector('.like-count');
+            const heartSpan = element.querySelector('.heart');
+            if(!countSpan || !heartSpan) return;
+            let currentLikes = parseInt(countSpan.innerText);
+            if (heartSpan.innerText === '❤️') {
+                heartSpan.innerText = '🤍';
+                countSpan.innerText = currentLikes - 1;
+            } else {
+                heartSpan.innerText = '❤️';
+                countSpan.innerText = currentLikes + 1;
+            }
+        }
+
+        // 8. Diğer Sayfalardan Kalan Puanı Buluta Eşitleme (Önlem)
+        window.bulutaPuanKaydet = async function() {
+            let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
+            let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
+            try {
+                await setDoc(doc(db, "users", activeUser), {
+                    currentPoints: currentPoints,
+                    totalEarned: totalEarned
+                }, { merge: true });
+            } catch (e) { console.error("Hata:", e); }
+        };
+    </script>
+</body>
+</html>

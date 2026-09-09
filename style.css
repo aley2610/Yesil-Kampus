@@ -1,0 +1,555 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* RENK PALETİMİZ */
+:root {
+    --koyu-yesil: #597858;
+    --acik-yesil: #a4b27d;
+    --detay-krem: #f2e3c6;
+    --kart-bej: #E8E2D5;
+    --arka-plan: #e2e8f0;
+    --auth-kahve: #c89f7a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* =========================================
+   1. GİRİŞ VE KAYIT SAYFASI TASARIMLARI
+   ========================================= */
+body {
+    background-color: var(--koyu-yesil);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Sadece giriş/kayıt sayfasındaki butonları büyütür */
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    text-align: center;
+}
+
+.auth-container h1 { color: var(--detay-krem); font-size: 32px; margin-bottom: 30px; }
+
+.auth-container input {
+    width: 90%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 25px;
+    border: none;
+    background-color: var(--auth-kahve);
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    outline: none;
+}
+
+.auth-container button {
+    width: 90%;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 25px;
+    border: none;
+    background-color: #d4c19c;
+    color: var(--koyu-yesil);
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.auth-container a { color: var(--detay-krem); text-decoration: underline; display: block; margin-top: 15px; font-size: 14px;}
+
+/* =========================================
+   2. MOBİL EKRAN ÇERÇEVESİ (TÜM İÇ SAYFALAR)
+   ========================================= */
+body.home-body {
+    background-color: var(--arka-plan);
+}
+
+.mobile-app-container {
+    background-color: var(--acik-yesil);
+    width: 100%;
+    max-width: 400px;
+    height: 100vh;
+    max-height: 850px;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================
+   3. ÜST HEADER (BAŞLIK VE MENÜ)
+   ========================================= */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    background-color: transparent;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-header .logo {
+    height: 55px;
+    width: auto;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    font-weight: 800;
+    color: var(--koyu-yesil);
+}
+
+/* ÇOK ÖNEMLİ: Menü Butonu Düzeltmesi (Devasa hap olmasını engeller) */
+button.menu-icon-btn {
+    font-size: 32px;
+    color: var(--koyu-yesil);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-weight: bold;
+    padding: 0;
+    width: auto;
+    margin: 0;
+}
+
+/* =========================================
+   4. YAN MENÜ (EKRANIN ALTINA DÜŞMESİNİ ENGELLER)
+   ========================================= */
+.side-drawer {
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 75%;
+    height: 100%;
+    background-color: var(--detay-krem);
+    z-index: 2000;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+    transition: right 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.side-drawer.open { right: 0; }
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--koyu-yesil);
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+    color: var(--koyu-yesil);
+}
+
+button.drawer-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--koyu-yesil);
+    width: auto;
+    padding: 0;
+    margin: 0;
+}
+
+a.menu-item-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #E5D6BB;
+    text-decoration: none;
+    color: var(--koyu-yesil);
+    font-weight: bold;
+    font-size: 15px;
+}
+
+/* =========================================
+   5. ORTAYA SABİT ALT MENÜ
+   ========================================= */
+.bottom-nav {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--koyu-yesil);
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 25px 25px 25px;
+    box-sizing: border-box;
+    height: 80px;
+    z-index: 1000;
+}
+
+.nav-icons {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.nav-icons img {
+    width: 30px;
+    height: auto;
+    opacity: 0.8;
+    transition: 0.2s;
+}
+
+.nav-icons img.active-nav-icon {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.center-flower {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -35px;
+    background-color: var(--koyu-yesil);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
+    text-decoration: none;
+    z-index: 1001;
+}
+
+.center-flower img {
+    width: 50px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* =========================================
+   6. ANA SAYFA KARTLARI
+   ========================================= */
+.page-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px 30px 20px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.icon-box {
+    background-color: var(--koyu-yesil);
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.icon-box img { width: 75%; height: auto; object-fit: contain; }
+
+.label-box {
+    background-color: var(--detay-krem);
+    color: var(--koyu-yesil);
+    width: 100%;
+    padding: 15px 5px;
+    text-align: center;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* =========================================
+   7. DİĞER SAYFALAR (Odak, Skor vb.)
+   ========================================= */
+.focus-circle {
+    width: 180px;
+    height: 180px;
+    background-color: #d1e8e2;
+    border-radius: 50%;
+    margin-bottom: 25px;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+button.focus-action-btn {
+    background-color: var(--koyu-yesil);
+    color: var(--detay-krem);
+    width: 100%;
+    padding: 16px 0;
+    border-radius: 20px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.focus-info-box {
+    background-color: var(--koyu-yesil);
+    color: var(--detay-krem);
+    width: 100%;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 12px 12px 0px var(--detay-krem);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 15px;
+}
+
+@keyframes nefesAlVer {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+.breathing-animation { animation: nefesAlVer 4s infinite ease-in-out; }
+
+/* Skor Tablosu */
+.score-title-box {
+    background-color: var(--detay-krem); 
+    color: var(--koyu-yesil);
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+.score-list { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.score-row {
+    background-color: var(--detay-krem); 
+    color: var(--koyu-yesil);
+    padding: 15px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+}
+.sticky-user-score {
+    position: sticky;
+    bottom: 90px;
+    width: 90%;
+    margin: 10px auto;
+    background-color: #728d5d; 
+    color: var(--detay-krem); 
+    padding: 15px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
+    z-index: 100;
+}
+
+/* =========================================
+   8. PROFİL SAYFASI TASARIMI
+   ========================================= */
+   /* =========================================
+           8.1. ORTA İÇERİK ALANI (Genişletilmiş ve Yukarı Taşınmış)
+           ========================================= */
+        .main-content {
+            flex: 1;
+            /* Üstten 15px, yanlardan 15px yaparak kutuları genişlettik ve yukarı çektik */
+            padding: 15px 15px 85px 15px; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Kutular arası boşluğu ideal seviyeye getirdik */
+        }
+
+        /* =========================================
+           8.2. SADECE PUAN GÖSTEREN ÜST KART
+           ========================================= */
+        .points-summary-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 15px; /* İç boşluğu biraz daralttık ki çok yer kaplamasın */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0e9df;
+            text-align: center;
+            width: 100%; /* Kırmızı çizdiğin gibi tam genişliğe yayılır */
+        }
+
+        .points-title {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .points-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #5c704c;
+            cursor: pointer; 
+            user-select: none;
+        }
+
+        /* =========================================
+           8.3. İLLÜSTRASYON VE SEVİYE KARTI
+           ========================================= */
+        .level-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0e9df;
+            text-align: center;
+            position: relative;
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;
+            width: 100%; /* Bu kartı da tam genişliğe yaydık */
+        }
+
+        .level-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #5c704c;
+            margin-bottom: 4px;
+        }
+
+        .level-subtitle {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            min-height: 30px;
+        }
+
+        /* Ortadaki İllüstrasyon Çerçevesi */
+        .growth-icon-box {
+            width: 100%;
+            flex: 1; 
+            min-height: 0; 
+            background-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px auto 10px;
+        }
+
+        .growth-icon-box img {
+            width: auto;
+            height: 100%;
+            max-height: 140px; /* Görseli biraz daha büyüttük */
+            object-fit: contain;
+        }
+
+        /* İlerleme Çubuğu */
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 14px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        /* =========================================
+           7. KAZANILAN VE HARCANAN PUAN TABLOSU
+           ========================================= */
+        .stats-table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            flex-shrink: 0; /* SİHİRLİ KOD: Üstteki kart büyüse bile bu tabloyu asla ezemez! */
+            margin-bottom: 5px;
+        }
+
+        .stat-cell {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0e9df;
+        }
+
+        .stat-cell-title {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .stat-cell-value.earned {
+            color: #5cb85c; 
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .stat-cell-value.spent {
+            color: #d9534f; 
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* --- ANA SAYFA YEŞİL PUAN KUTUCUĞU --- */
+        #anaSayfaPuan {
+            background-color: #5c704c; /* Temamızın o asil koyu yeşili */
+            color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column; /* Yazıları yan yana değil, alt alta dizer */
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            min-width: 100px;
+        }
+
+        #anaSayfaPuan .fidan-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #f4cc3a; /* Tatlı sarı/bej vurgu rengimiz */
+            margin-bottom: 2px;
+        }
+
+        #anaSayfaPuan .puan-text {
+            font-size: 16px;
+            font-weight: 800;
+        }

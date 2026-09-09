@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Çevre Quizi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. GENEL SIFIRLAMA VE TASARIM
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .app-container { position: relative; width: 100%; max-width: 400px; height: 100vh; max-height: 850px; background-color: #f8f5ee; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .top-header { background-color: #5c704c; padding: 18px 20px 22px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; z-index: 10; }
+        .back-btn { background: rgba(255, 255, 255, 0.2); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; text-decoration: none; color: white; font-size: 18px; font-weight: bold; }
+        .header-title { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+        .header-logo { width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; }
+        
+        /* =========================================
+           2. ORTA ALAN VE KARTLAR
+           ========================================= */
+        .main-content { flex: 1; padding: 20px 20px 110px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }        .daily-question-card { background-color: #ffffff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e6cda3; }
+        .card-badge { background-color: #f4cc3a; color: #333; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 12px; }
+        .question-text { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 15px; line-height: 1.4; }
+        .options-list { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { background-color: #f8f5ee; border: 1px solid #dcd7ce; padding: 12px 15px; border-radius: 12px; text-align: left; font-size: 13px; font-weight: 500; color: #444; cursor: pointer; transition: all 0.2s ease; }
+        .option-btn:hover { background-color: #e6cda3; border-color: #d8bd93; }
+        .option-btn.correct { background-color: #5cb85c !important; color: white !important; border-color: #4cae4c !important; }
+        .option-btn.wrong { background-color: #d9534f !important; color: white !important; border-color: #d43f3a !important; }
+        .feedback-text { margin-top: 15px; font-size: 12px; color: #5c704c; font-weight: 500; display: none; background-color: rgba(92, 112, 76, 0.1); padding: 10px; border-radius: 8px; border-left: 3px solid #5c704c; }
+        
+        /* =========================================
+           3. MİNİ QUİZ VE ALT MENÜ
+           ========================================= */
+        .mini-quiz-card { background: linear-gradient(135deg, #5c704c, #768a4c); border-radius: 20px; padding: 20px; color: white; text-align: center; box-shadow: 0 6px 15px rgba(92, 112, 76, 0.3); }
+        .mini-quiz-card h3 { font-size: 18px; margin-bottom: 8px; }
+        .mini-quiz-card p { font-size: 12px; opacity: 0.9; margin-bottom: 15px; }
+        .start-quiz-btn { background-color: #f4cc3a; color: #333; border: none; padding: 12px 24px; border-radius: 25px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s; }
+        .start-quiz-btn:active { transform: scale(0.95); }
+        #activeQuizArea { display: none; }
+        
+        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; background-color: #29432f; border-top-left-radius: 25px; border-top-right-radius: 25px; display: flex; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 30; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); }
+        .nav-link { flex: 1; display: flex; justify-content: center; align-items: center; text-decoration: none; height: 100%; }
+        .nav-link img { width: 50px; height: 50px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s ease; }
+        .nav-link.active img { opacity: 1; transform: scale(1.1); }
+        .center-nav-btn { position: relative; top: -25px; width: 90px; height: 90px; background-color: #5c704c; border: 5px solid #f8f5ee; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.25); text-decoration: none; transition: transform 0.2s ease; z-index: 40; }
+        .center-nav-btn:active { transform: scale(0.92); }
+        .center-nav-btn img { width: 40px; height: 40px; object-fit: contain; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Çevre Quizi</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:22px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <!-- Hata olursa burası çalışacak -->
+            <div id="hataKutusu" style="display:none; background-color: #f8d7da; color: #721c24; padding: 20px; border-radius: 15px; border: 1px solid #f5c6cb; text-align: center; margin-bottom: 20px;">
+                <h3 style="margin-bottom:10px;">🚨 Ufak Bir Sorun Var Aşkm!</h3>
+                <p id="hataMesaji" style="font-size:14px; line-height:1.5;"></p>
+            </div>
+
+            <!-- Günün Sorusu Alanı -->
+            <div class="daily-question-card" id="dailyQuestionCard">
+                <div class="card-badge">⏳ Sorular Yükleniyor...</div>
+                <div class="question-text">Lütfen bekle bebeğim, sorular Excel'den çekiliyor...</div>
+            </div>
+
+            <!-- Mini Quiz Alanı -->
+            <div class="mini-quiz-card" id="quizStarterCard">
+                <h3>Bilgini Sına! 🧠</h3>
+                <p>10 soruluk mini quiz ile sürdürülebilirlik seviyeni ölç ve ekstra yeşil puan kazan.</p>
+                <button class="start-quiz-btn" onclick="startMiniQuiz()">Mini Quizi Başlat</button>
+            </div>
+
+            <div id="activeQuizArea">
+                <!-- Aktif quiz buraya gelecek -->
+            </div>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link"><img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'"></a>
+            <a href="skor.html" class="nav-link"><img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'"></a>
+            <a href="anasayfa.html" class="center-nav-btn"><img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'"></a>
+            <a href="quiz.html" class="nav-link active"><img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'"></a>
+            <a href="profil.html" class="nav-link"><img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'"></a>
+        </nav>
+
+    </div>
+
+    <script>
+        // --- SİHİRLİ DEDEKTİF HATA GÖSTERİCİ ---
+        function ekranaHataBas(mesaj) {
+            document.getElementById('hataKutusu').style.display = 'block';
+            document.getElementById('hataMesaji').innerHTML = mesaj;
+            document.getElementById('dailyQuestionCard').style.display = 'none';
+        }
+
+        // 🌟 HATAYI ÇÖZEN KISIM: Bütün değişkenleri sadece 1 kere en başta tanımlıyoruz!
+        let gununSorulari = [];
+        let quizSorulari = [];
+        let currentQuizIndex = 0;
+        let dogruSayisi = 0; 
+        let quizGecmisi = []; 
+
+        // --- 1. GÜNÜN SORUSU BAĞLANTISI ---
+        function gununSorusunuEkranaBas() {
+            if (gununSorulari.length === 0) return;
+
+            const bugun = new Date();
+            const gunIndex = Math.floor((bugun - new Date(bugun.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            const secilenIndex = gunIndex % gununSorulari.length; 
+            
+            const soruVerisi = gununSorulari[secilenIndex];
+            const dailyCard = document.getElementById('dailyQuestionCard');
+            
+            const isACorrect = (soruVerisi.dogruCevap || "").includes("A");
+            const isBCorrect = (soruVerisi.dogruCevap || "").includes("B");
+            const isCCorrect = (soruVerisi.dogruCevap || "").includes("C");
+            
+            const aciklamaTemiz = (soruVerisi.aciklama || "").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, " ");
+
+            dailyCard.innerHTML = `
+                <div class="card-badge">⭐ Günün Sorusu (+50 YP)</div>
+                <div class="question-text">${soruVerisi.soru}</div>
+                
+                <div class="options-list">
+                    <button class="option-btn" onclick="answerDaily(this, ${isACorrect}, '${aciklamaTemiz}')">A) ${soruVerisi.A}</button>
+                    <button class="option-btn" onclick="answerDaily(this, ${isBCorrect}, '${aciklamaTemiz}')">B) ${soruVerisi.B}</button>
+                    <button class="option-btn" onclick="answerDaily(this, ${isCCorrect}, '${aciklamaTemiz}')">C) ${soruVerisi.C}</button>
+                </div>
+                <div class="feedback-text" id="dailyFeedback"></div>
+            `;
+            
+            const todayStr = bugun.toLocaleDateString('tr-TR');
+            if (localStorage.getItem('quizLastAnsweredDate') === todayStr) {
+                // Puanı anında buluta fırlatır!
+                if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
+                const optionsBox = dailyCard.querySelector('.options-list');
+                const feedbackBox = dailyCard.querySelector('#dailyFeedback');
+                if(optionsBox && feedbackBox) {
+                    optionsBox.style.opacity = "0.6";
+                    optionsBox.style.pointerEvents = "none";
+                    feedbackBox.style.display = "block";
+                    feedbackBox.innerHTML = "<b>Bugünün sorusunu zaten cevapladın! Yarına kadar bekle. ⏳</b>";
+                }
+            }
+        }
+
+        function answerDaily(btn, isCorrect, aciklama) {
+            if(document.getElementById('dailyFeedback').style.display === 'block') return;
+
+            const buttons = btn.parentElement.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.style.pointerEvents = 'none');
+
+            const feedback = document.getElementById('dailyFeedback');
+            feedback.style.display = 'block';
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedback.innerHTML = `<b>Tebrikler! Doğru Cevap. 🎉</b><br>${aciklama}<br><br><i>(+50 YP Kazandın)</i>`;
+                
+                let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
+                let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0"); // Eksikti, düzeltildi!
+                localStorage.setItem("currentPoints", currentPoints + 50);
+                localStorage.setItem("totalEarned", totalEarned + 50); // Eksikti, düzeltildi!
+                localStorage.setItem('quizLastAnsweredDate', new Date().toLocaleDateString('tr-TR'));
+
+                // 🌟 GEÇMİŞ LİSTESİNE EKLEME
+                let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
+                aktiviteGecmisi.push({ eylem: "Günün Sorusu Doğru Bilindi ⭐", puan: 50 });
+                if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
+                localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
+
+                if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
+
+            } else {
+                btn.classList.add('wrong');
+                feedback.innerHTML = `<b>Maalesef yanlış Cevap. 😔</b><br>${aciklama}`;
+                feedback.style.color = "#d9534f";
+                feedback.style.borderLeftColor = "#d9534f";
+                feedback.style.backgroundColor = "rgba(217, 83, 79, 0.1)";
+            }
+        }
+
+        // --- 2. MİNİ QUİZ BAĞLANTISI VE ÖZET EKRANI ---
+        function startMiniQuiz() {
+            document.getElementById('dailyQuestionCard').style.display = 'none'; 
+            document.getElementById('quizStarterCard').style.display = 'none'; 
+            document.getElementById('activeQuizArea').style.display = 'block'; 
+            
+            // Değişkenleri sıfırla (Her yeni quizde temiz başlasın)
+            currentQuizIndex = 0;
+            dogruSayisi = 0;
+            quizGecmisi = [];
+            
+            if (quizSorulari.length > 0) {
+                soruyuEkranaBas(0); 
+            } else {
+                ekranaHataBas("Mini quiz soruları hafızaya alınamamış aşkım, CSV dosyan boş olabilir mi?");
+            }
+        }
+
+        function soruyuEkranaBas(index) {
+            if (index >= quizSorulari.length) {
+                quiziBitirVeOzetle(); // 10 Soru bitince sihirli özet ekranını çağırır! ✨
+                return;
+            }
+
+            const soruVerisi = quizSorulari[index];
+            const activeArea = document.getElementById('activeQuizArea');
+            
+            const isACorrect = (soruVerisi.dogruCevap || "").includes("A");
+            const isBCorrect = (soruVerisi.dogruCevap || "").includes("B");
+            const isCCorrect = (soruVerisi.dogruCevap || "").includes("C");
+
+            const aciklamaTemiz = (soruVerisi.aciklama || "").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, " ");
+
+            activeArea.innerHTML = `
+                <div class="daily-question-card">
+                    <div class="card-badge" style="background-color:#b8bc73; color:white;">Soru ${index + 1} / ${quizSorulari.length}</div>
+                    <div class="question-text">${soruVerisi.soru}</div>
+                    
+                    <div class="options-list">
+                        <button class="option-btn" onclick="answerQuiz(this, ${isACorrect}, '${aciklamaTemiz}')">A) ${soruVerisi.A}</button>
+                        <button class="option-btn" onclick="answerQuiz(this, ${isBCorrect}, '${aciklamaTemiz}')">B) ${soruVerisi.B}</button>
+                        <button class="option-btn" onclick="answerQuiz(this, ${isCCorrect}, '${aciklamaTemiz}')">C) ${soruVerisi.C}</button>
+                    </div>
+                    <div class="feedback-text" id="quizFeedback"></div>
+                </div>
+                <button class="start-quiz-btn" style="width:100%; margin-top:15px; display:none;" id="nextQuestionBtn" onclick="sonrakiSoru()">Sıradaki Soru ➡️</button>
+            `;
+        }
+
+        function answerQuiz(btn, isCorrect, aciklama) {
+            if(document.getElementById('quizFeedback').style.display === 'block') return;
+            const buttons = btn.parentElement.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.style.pointerEvents = 'none');
+
+            const feedback = document.getElementById('quizFeedback');
+            feedback.style.display = 'block';
+            document.getElementById('nextQuestionBtn').style.display = 'block'; 
+
+            // 🌟 SİHİR BURADA: Doğruları say ve geçmişi kaydet!
+            if (isCorrect) dogruSayisi++;
+            quizGecmisi.push({
+                soru: quizSorulari[currentQuizIndex].soru,
+                isCorrect: isCorrect,
+                aciklama: aciklama
+            });
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedback.innerHTML = `<b>Doğru! ♻️</b><br>${aciklama}`;
+                feedback.style.color = "#5c704c";
+                feedback.style.borderLeftColor = "#5c704c";
+                feedback.style.backgroundColor = "rgba(92, 112, 76, 0.1)";
+            } else {
+                btn.classList.add('wrong');
+                feedback.innerHTML = `<b>Yanlış. ❌</b><br>${aciklama}`;
+                feedback.style.color = "#d9534f";
+                feedback.style.borderLeftColor = "#d9534f";
+                feedback.style.backgroundColor = "rgba(217, 83, 79, 0.1)";
+            }
+        }
+
+        function sonrakiSoru() {
+            currentQuizIndex++;
+            soruyuEkranaBas(currentQuizIndex);
+        }
+
+        // --- 🌟 KUSURSUZ ÖZET VE ÖDÜL EKRANI ---
+        function quiziBitirVeOzetle() {
+            const activeArea = document.getElementById('activeQuizArea');
+            const kazanilanPuan = dogruSayisi * 5; 
+            
+            let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
+            let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0");
+            localStorage.setItem("currentPoints", currentPoints + kazanilanPuan);
+            localStorage.setItem("totalEarned", totalEarned + kazanilanPuan);
+            
+            // 🌟 GEÇMİŞ LİSTESİNE EKLEME
+            if (kazanilanPuan > 0) {
+                let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
+                aktiviteGecmisi.push({ eylem: `Mini Quiz Tamamlandı 🧠`, puan: kazanilanPuan });
+                if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
+                localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
+            }
+
+            if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
+
+            let ozetHTML = `
+                <div class="daily-question-card" style="text-align: center; border: 2px solid #5c704c; padding: 25px 20px;">
+                    <h2 style="color: #5c704c; margin-bottom: 10px; font-size: 22px;">Quiz Tamamlandı! 🎉</h2>
+                    <p style="font-size: 15px; color: #444; margin-bottom: 20px;">10 sorudan <b>${dogruSayisi}</b> tanesini doğru bildin.</p>
+                    
+                    <div style="background: #f4cc3a; color: #333; padding: 15px; border-radius: 15px; font-size: 18px; font-weight: 900; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        Kazanılan Ödül: +${kazanilanPuan} YP
+                    </div>
+            `;
+
+            let yanlislar = quizGecmisi.filter(q => !q.isCorrect);
+            
+            if (yanlislar.length === 0) {
+                ozetHTML += `
+                    <div style="background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #c8e6c9;">
+                        <b>Kusursuzsun aşkım! 🌿💚</b><br>Hepsini doğru bildin ve 50 tam puanı kaptın! Sürdürülebilirlik elçisi olmaya hazırsın.
+                    </div>`;
+            } else {
+                ozetHTML += `
+                    <div style="text-align: left; background: #fff3f3; padding: 15px; border-radius: 12px; border: 1px solid #ffcdd2; margin-bottom: 20px; max-height: 250px; overflow-y: auto;">
+                        <h4 style="color: #d32f2f; margin-bottom: 12px; border-bottom: 1px solid #ffcdd2; padding-bottom: 5px;">Gözden Kaçanlar 🧐</h4>`;
+                
+                yanlislar.forEach((y) => {
+                    ozetHTML += `
+                        <div style="margin-bottom: 15px; font-size: 12px;">
+                            <b style="color: #333;">Soru:</b> ${y.soru}<br>
+                            <b style="color: #5c704c; display:inline-block; margin-top:4px;">💡 Doğrusu:</b> <span style="color:#555;">${y.aciklama}</span>
+                        </div>
+                    `;
+                });
+                ozetHTML += `</div>`;
+            }
+
+            ozetHTML += `
+                    <button class="start-quiz-btn" style="width: 100%;" onclick="window.location.href='anasayfa.html'">Ödülü Al & Ana Sayfaya Dön 🏠</button>
+                </div>
+            `;
+
+            activeArea.innerHTML = ozetHTML;
+        }
+
+          
+        // --- 3. YENİ NESİL KUSURSUZ CSV PARÇALAYICI ---
+        function csvParcala(metin) {
+            if (!metin || metin.trim() === "") return [];
+
+            const ayirici = metin.indexOf(';') >= 0 ? ';' : (metin.indexOf('\t') >= 0 ? '\t' : ',');
+            const sonuc = [];
+            let hucreler = [];
+            let hucre = "";
+            let tirnakIci = false;
+
+            for (let i = 0; i < metin.length; i++) {
+                let karakter = metin[i];
+                let sonrakiKarakter = metin[i + 1];
+
+                if (karakter === '"') {
+                    if (tirnakIci && sonrakiKarakter === '"') {
+                        hucre += '"';
+                        i++; 
+                    } else {
+                        tirnakIci = !tirnakIci; 
+                    }
+                } else if (karakter === ayirici && !tirnakIci) {
+                    hucreler.push(hucre.trim());
+                    hucre = "";
+                } else if ((karakter === '\n' || karakter === '\r') && !tirnakIci) {
+                    if (karakter === '\r' && sonrakiKarakter === '\n') i++;
+                    if (hucre !== "" || hucreler.length > 0) {
+                        hucreler.push(hucre.trim());
+                        satiriIsle(hucreler, sonuc);
+                    }
+                    hucreler = [];
+                    hucre = "";
+                } else {
+                    hucre += karakter;
+                }
+            }
+            
+            if (hucre !== "" || hucreler.length > 0) {
+                hucreler.push(hucre.trim());
+                satiriIsle(hucreler, sonuc);
+            }
+
+            if (sonuc.length > 0 && sonuc[0].soru.toLowerCase().includes('soru')) {
+                sonuc.shift();
+            }
+            return sonuc;
+        }
+
+        function satiriIsle(hucreler, sonuc) {
+            if (hucreler.length < 2) return;
+
+            if (hucreler.length === 3 || (hucreler.length > 3 && hucreler[1].includes('A)'))) {
+                const siklar = hucreler[1] || "";
+                const cevapVeAciklama = hucreler[2] || "";
+
+                const aMatch = siklar.match(/A\)\s*(.*?)(?=B\)|$)/is);
+                const bMatch = siklar.match(/B\)\s*(.*?)(?=C\)|$)/is);
+                const cMatch = siklar.match(/C\)\s*(.*?)(?=D\)|$)/is);
+
+                sonuc.push({
+                    soru: hucreler[0] || "",
+                    A: aMatch ? aMatch[1].trim() : "A Şıkkı",
+                    B: bMatch ? bMatch[1].trim() : "B Şıkkı",
+                    C: cMatch ? cMatch[1].trim() : "C Şıkkı",
+                    dogruCevap: (cevapVeAciklama.charAt(0) || "A").toUpperCase(),
+                    aciklama: cevapVeAciklama.includes('-') ? cevapVeAciklama.substring(cevapVeAciklama.indexOf('-') + 1).trim() : cevapVeAciklama
+                });
+            } else if (hucreler.length >= 6) {
+                sonuc.push({
+                    soru: hucreler[0],
+                    A: hucreler[1],
+                    B: hucreler[2],
+                    C: hucreler[3],
+                    dogruCevap: (hucreler[5] && hucreler[5].length === 1) ? hucreler[5] : (hucreler[4] || "A"),
+                    aciklama: hucreler[6] || hucreler[5] || ""
+                });
+            }
+        }
+
+        // --- 4. AKILLI VERİ ÇEKME YÖNETİCİSİ ---
+        async function sorulariGetir() {
+            if (window.location.protocol === 'file:') {
+                ekranaHataBas("Ah bebeğim, dosyayı klasörden çift tıklayarak (file:///) açmışsın! Lütfen VS Code'da sağ tıklayıp 'Open with Live Server' diyerek aç! 🥺");
+                return;
+            }
+
+            try {
+                // Günün Sorusu
+                const gununYaniti = await fetch('günün sorulari.csv');
+                if (!gununYaniti.ok) throw new Error("<b>günün sorulari.csv</b> dosyası klasörde bulunamadı!");
+                const gununVerisi = await gununYaniti.text();
+                gununSorulari = csvParcala(gununVerisi);
+                
+                if (gununSorulari.length > 0) {
+                    gununSorusunuEkranaBas(); 
+                } else {
+                    throw new Error("Günün soruları dosyanı okudum ama içi boş veya şablonu bozuk görünüyor.");
+                }
+
+                // Mini Quiz
+                const quizYaniti = await fetch('quiz sorulari.csv'); 
+                if (!quizYaniti.ok) throw new Error("<b>quiz sorulari.csv</b> dosyası klasörde bulunamadı!");
+                const quizVerisi = await quizYaniti.text();
+                
+                let tumSorular = csvParcala(quizVerisi);
+
+                // 🌟 SİHİRLİ FİLTRE 1: Excel'de kazara aynı soru iki kere yazıldıysa, birini sil (Tekilleştirme)
+                let benzersizSorular = [];
+                let soruMetinleri = new Set();
+                for (let soru of tumSorular) {
+                    if (!soruMetinleri.has(soru.soru)) {
+                        soruMetinleri.add(soru.soru);
+                        benzersizSorular.push(soru);
+                    }
+                }
+                
+                // 🌟 SİHİRLİ FİLTRE 2: Kusursuz Karıştırma (Fisher-Yates Algoritması)
+                for (let i = benzersizSorular.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [benzersizSorular[i], benzersizSorular[j]] = [benzersizSorular[j], benzersizSorular[i]];
+                }
+                
+                // Tamamen benzersiz ve kusursuz karışmış havuzdan ilk 10 tanesini al
+                quizSorulari = benzersizSorular.slice(0, 10);
+                
+            } catch (hata) {
+                console.error("Detaylı Hata:", hata);
+                ekranaHataBas(hata.message);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            sorulariGetir();
+        });
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+            authDomain: "yesilkampus-iuc.firebaseapp.com",
+            projectId: "yesilkampus-iuc",
+            storageBucket: "yesilkampus-iuc.firebasestorage.app",
+            messagingSenderId: "555123910788",
+            appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        let app;
+        try { app = initializeApp(firebaseConfig); } 
+        catch (e) { app = getApp(); }
+        const db = getFirestore(app);
+        
+        const activeUser = localStorage.getItem("kampusUser") || "DemoKullanici";
+
+        // Diğer kodlardan çağrılabilmesi için window objesine ekliyoruz
+        window.bulutaPuanKaydet = async function() {
+            let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
+            let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
+            
+            try {
+                await setDoc(doc(db, "users", activeUser), {
+                    currentPoints: currentPoints,
+                    totalEarned: totalEarned
+                }, { merge: true }); // Eski verileri ezmez, sadece puanı günceller
+                console.log("Puanlar başarıyla buluta mühürlendi! ☁️🌿");
+            } catch (e) {
+                console.error("Buluta kaydedilirken hata oluştu: ", e);
+            }
+        };
+    </script>
+
+        <!-- ☁️ FİREBASE BULUT KAYIT MOTORU -->
+    <script type="module">
+        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+            authDomain: "yesilkampus-iuc.firebaseapp.com",
+            projectId: "yesilkampus-iuc",
+            storageBucket: "yesilkampus-iuc.firebasestorage.app",
+            messagingSenderId: "555123910788",
+            appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        let app;
+        try { app = initializeApp(firebaseConfig); } 
+        catch (e) { app = getApp(); }
+        const db = getFirestore(app);
+        
+        window.bulutaPuanKaydet = async function() {
+            const activeUser = localStorage.getItem("kampusUser") || "DemoKullanici";
+            let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
+            let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
+            
+            // 🌟 YENİ SİHİR BURADA: Geçmişi de buluta alıyoruz!
+            let aktiviteGecmisi = JSON.parse(localStorage.getItem('aktiviteGecmisi')) || []; 
+            
+            try {
+                await setDoc(doc(db, "users", activeUser), {
+                    currentPoints: currentPoints,
+                    totalEarned: totalEarned,
+                    aktiviteGecmisi: aktiviteGecmisi 
+                }, { merge: true }); 
+                console.log("Puan ve geçmiş başarıyla buluta mühürlendi! ☁️🌿");
+            } catch (e) {
+                console.error("Buluta kaydedilirken hata oluştu: ", e);
+            }
+        };
+    </script>
+
+
+</body>
+</html>

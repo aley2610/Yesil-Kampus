@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Yeşil Odak</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           1. GENEL SIFIRLAMA
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .app-container { position: relative; width: 100%; max-width: 400px; height: 100vh; max-height: 850px; background-color: #f8f5ee; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        
+        /* =========================================
+           2. ÜST BAŞLIK BARI
+           ========================================= */
+        .top-header { background-color: #5c704c; padding: 18px 20px 22px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; z-index: 10; }
+        .back-btn { background: rgba(255, 255, 255, 0.2); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; text-decoration: none; color: white; font-size: 18px; font-weight: bold; }
+        .header-title { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+        .header-logo { width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* =========================================
+           3. ODAK İÇERİĞİ VE ANİMASYONLAR
+           ========================================= */
+        .main-content { flex: 1; padding: 30px 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 15px; }
+        
+        .timer-display { font-size: 55px; font-weight: 700; color: #333; letter-spacing: 2px; font-family: monospace; }
+        
+        /* Doğanın Nefes Alışını Simgeleyen Efekt */
+        @keyframes breathe {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(92, 112, 76, 0.4); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(92, 112, 76, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(92, 112, 76, 0.4); }
+        }
+        .breathing-animation { animation: breathe 3.5s infinite ease-in-out; border-radius: 50%; }
+
+        .action-button { width: 100%; background-color: #b8bc73; color: white; border: none; padding: 16px; border-radius: 18px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .action-button.danger { background-color: #d9534f; }
+        
+        .info-text-box { background-color: #ffffff; border-radius: 16px; padding: 15px; border-left: 4px solid #5c704c; font-size: 12px; color: #666; line-height: 1.5; box-shadow: 0 3px 10px rgba(0,0,0,0.03); margin-top: auto; margin-bottom: 70px; }
+
+        /* =========================================
+           4. ALT NAVİGASYON
+           ========================================= */
+        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; background-color: #29432f; border-top-left-radius: 25px; border-top-right-radius: 25px; display: flex; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 30; }
+        .nav-link { flex: 1; display: flex; justify-content: center; align-items: center; text-decoration: none; height: 100%; }
+        .nav-link img { width: 50px; height: 50px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s ease; }
+        .center-nav-btn { position: relative; top: -25px; width: 90px; height: 90px; background-color: #5c704c; border: 5px solid #f8f5ee; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.25); text-decoration: none; z-index: 40; }
+        .center-nav-btn img { width: 40px; height: 40px; object-fit: contain; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- 🌙 SİHİRLİ OLED UYKU KALKANI -->
+        <div id="oledKalkan" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: #333; cursor: pointer;">
+            <span style="font-size: 60px; margin-bottom: 20px; opacity: 0.8;">🌙</span>
+            <p style="font-size: 16px; font-weight: bold; color: #555;">Yeşil Odak Aktif</p>
+            <p style="font-size: 12px; margin-top: 10px; color: #333;">Uyandırmak için ekrana çift dokun</p>
+        </div>
+
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Yeşil Odak</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:22px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            <h2 style="color: #5c704c; font-size: 18px;">60 Dakikalık Dijital Detoks</h2>
+            
+            <div id="zamanGostergesi" class="timer-display">60:00</div>
+
+            <img src="images/yeşil odak.png" alt="Odak" id="odakResmi" style="width: 140px; margin: 10px 0; transition: transform 0.3s;" onerror="this.outerHTML='<span style=\'font-size:80px\'>⏳</span>'">
+            
+            <p style="color: #5c704c; font-size: 12px; font-weight: 600; padding: 0 10px;">
+                Fiziksel kilit tuşuna basmak veya başka uygulamaya geçmek odağı bozar! Şarjını korumak için <b>Ekranı Karart</b> modunu kullan.
+            </p>
+
+            <button id="baslatBtn" class="action-button">Yeşil Odak'ı Başlat</button>
+            <button id="karartBtn" class="action-button" style="background-color: #1a252f; display: none;">🌙 Ekranı Karart (Pil Tasarrufu)</button>
+
+            <div class="info-text-box">
+                🌱 Odaklandığın süre boyunca cihazının 0.025 kWh enerji tasarrufu yapmasını sağlar ve 11 g CO2 tasarrufu sağlarsın. 11 g CO2 tasarrufu sağladığın için 11 Yeşil Puan ve 39 Çaba Puanı kazanırsın.
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link"><img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'"></a>
+            <a href="skor.html" class="nav-link"><img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'"></a>
+            <a href="anasayfa.html" class="center-nav-btn"><img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'"></a>
+            <a href="quiz.html" class="nav-link"><img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'"></a>
+            <a href="profil.html" class="nav-link"><img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'"></a>
+        </nav>
+    </div>
+
+    <!-- 🧠 YEŞİL ODAK MOTORU VE GÜVENLİK SİSTEMİ -->
+    <script>
+        let odakAktif = false;
+        
+        // 🌟 JÜRİ İÇİN TEST NOTU: Sunumda 60 dakika bekleyemeyeceğin için burayı "3600" yerine "10" saniye yaparak jüriye hızlıca gösterebilirsin aşkım!
+        let kalanSaniye = 3600; 
+        let timerInterval = null;
+
+        const baslatBtn = document.getElementById("baslatBtn");
+        const karartBtn = document.getElementById("karartBtn");
+        const odakResmi = document.getElementById("odakResmi");
+        const oledKalkan = document.getElementById("oledKalkan");
+        const zamanGostergesi = document.getElementById("zamanGostergesi");
+
+        function formatZaman(saniye) {
+            let dk = Math.floor(saniye / 60);
+            let sn = saniye % 60;
+            return (dk < 10 ? "0" + dk : dk) + ":" + (sn < 10 ? "0" + sn : sn);
+        }
+
+        baslatBtn.addEventListener("click", () => {
+            if (!odakAktif) {
+                // ODAĞI BAŞLAT
+                odakAktif = true;
+                odakResmi.classList.add("breathing-animation"); // Nefes alma efekti başlar
+                baslatBtn.textContent = "Pes Et (Odağı Boz)";
+                baslatBtn.classList.add("danger");
+                karartBtn.style.display = "block";
+
+                // Geri Sayım Motoru
+                timerInterval = setInterval(() => {
+                    kalanSaniye--;
+                    zamanGostergesi.innerText = formatZaman(kalanSaniye);
+
+                    if (kalanSaniye <= 0) {
+                        odagiBasariylaBitir();
+                    }
+                }, 1000);
+            } else {
+                // PES ET BUTONUNA BASILDI
+                if(confirm("Odaklanmayı bitirmek istediğine emin misin? Puan kazanamayacaksın.")) {
+                    odagiBoz("Odaklanmayı kendin sonlandırdın.");
+                }
+            }
+        });
+
+        // 🎉 SÜRE BİTTİĞİNDE ÖDÜL VEREN FONKSİYON
+        function odagiBasariylaBitir() {
+            clearInterval(timerInterval);
+            odakAktif = false;
+            
+            alert("Harika! 1 Saatlik dijital detoksu tamamladın! Doğaya nefes oldun ve +50 YP kazandın! 🌿💚");
+
+            let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
+            let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0");
+            localStorage.setItem("currentPoints", currentPoints + 50);
+            localStorage.setItem("totalEarned", totalEarned + 50);
+
+            // 🌟 GEÇMİŞ LİSTESİNE EKLEME
+            let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
+            aktiviteGecmisi.push({ eylem: "Yeşil Odak (Dijital Detoks) 🌙", puan: 50 });
+            if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
+            localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
+
+            if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
+
+            sifirlaUI();
+        }
+
+        // 🚨 ODAK BOZULDUĞUNDA CEZA VEREN FONKSİYON
+        function odagiBoz(mesaj) {
+            clearInterval(timerInterval);
+            odakAktif = false;
+            sifirlaUI();
+            
+            // Eğer OLED ekrandayken odak bozulduysa ekranı temizlemek için mesajı biraz geciktiriyoruz
+            setTimeout(() => alert(mesaj), 200); 
+        }
+
+        // Arayüzü İlk Haline Döndürür
+        function sifirlaUI() {
+            kalanSaniye = 3600; // Sayacı sıfırla (Bunu da test için değiştirdiysen düzeltmeyi unutma)
+            zamanGostergesi.innerText = "60:00";
+            odakResmi.classList.remove("breathing-animation");
+            baslatBtn.textContent = "Yeşil Odak'ı Başlat";
+            baslatBtn.classList.remove("danger");
+            karartBtn.style.display = "none";
+            oledKalkan.style.display = "none";
+        }
+
+        // 🌙 OLED UYKU MODU (Şarj Koruma Kalkanı)
+        karartBtn.addEventListener("click", () => {
+            oledKalkan.style.display = "flex";
+        });
+
+        // Uyandırmak İçin Siyah Ekrana Çift Tıklama
+        oledKalkan.addEventListener("dblclick", () => {
+            oledKalkan.style.display = "none";
+        });
+
+        // 🚨 KUSURSUZ GÜVENLİK DUVARI (Uygulama arka plana atıldığında)
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && odakAktif) {
+                odagiBoz("Dikkat! Başka uygulamaya geçtiğin (veya sekmeyi değiştirdiğin) için odaklanman bozuldu. Yeşil puanların yandı! 🥺");
+            }
+        });
+    </script>
+    <!-- ☁️ FİREBASE BULUT KAYIT MOTORU -->
+    <script type="module">
+        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+            authDomain: "yesilkampus-iuc.firebaseapp.com",
+            projectId: "yesilkampus-iuc",
+            storageBucket: "yesilkampus-iuc.firebasestorage.app",
+            messagingSenderId: "555123910788",
+            appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        let app;
+        try { app = initializeApp(firebaseConfig); } 
+        catch (e) { app = getApp(); }
+        const db = getFirestore(app);
+        
+        window.bulutaPuanKaydet = async function() {
+            const activeUser = localStorage.getItem("kampusUser") || "DemoKullanici";
+            let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
+            let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
+            
+            // 🌟 YENİ SİHİR BURADA: Geçmişi de buluta alıyoruz!
+            let aktiviteGecmisi = JSON.parse(localStorage.getItem('aktiviteGecmisi')) || []; 
+            
+            try {
+                await setDoc(doc(db, "users", activeUser), {
+                    currentPoints: currentPoints,
+                    totalEarned: totalEarned,
+                    aktiviteGecmisi: aktiviteGecmisi 
+                }, { merge: true }); 
+                console.log("Puan ve geçmiş başarıyla buluta mühürlendi! ☁️🌿");
+            } catch (e) {
+                console.error("Buluta kaydedilirken hata oluştu: ", e);
+            }
+        };
+    </script>
+</body>
+</html>

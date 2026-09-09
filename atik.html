@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Geri Dönüşüm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 🚀 GERÇEK QR OKUYUCU KÜTÜPHANESİ -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        /* GENEL AYARLAR */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+        .app-container {
+            position: relative; width: 100%; max-width: 400px; height: 100vh; max-height: 850px;
+            background-color: #f8f5ee; overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .top-header {
+            background-color: #5c704c; padding: 20px 20px 25px;
+            border-bottom-left-radius: 28px; border-bottom-right-radius: 28px;
+            display: flex; justify-content: space-between; align-items: center;
+            color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 10;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2); border: none; width: 40px; height: 40px;
+            border-radius: 12px; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; text-decoration: none; color: white; font-size: 20px; font-weight: bold;
+        }
+
+        .header-title { font-size: 20px; font-weight: 700; text-align: center; }
+        .header-logo { width: 38px; height: 40px; display: flex; justify-content: center; align-items: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+        .main-content {
+            flex: 1; 
+            padding: 25px 20px 130px; /* SİHİRLİ DOKUNUŞ: 80px olan alt boşluğu 130px yaptık! */
+            overflow-y: auto;
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+
+        .qr-card {
+            background-color: #ffffff; border-radius: 24px; padding: 25px 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06); border: 1px solid #f0e9df;
+            display: flex; flex-direction: column; align-items: center; width: 100%;
+        }
+
+        .qr-title { color: #5c704c; font-size: 18px; font-weight: 700; margin-bottom: 15px; text-align: center; }
+
+        /* 🌟 DÜZELTİLEN KAMERA KUTUSU TASARIMI */
+        .qr-image-box {
+            width: 220px; height: 220px; background-color: #f8f5ee; border-radius: 16px;
+            margin-bottom: 15px; overflow: hidden; border: 3px dashed #5c704c; 
+            position: relative; /* İçindeki elemanların taşmasını engeller */
+        }
+        
+        #placeholderContainer, #reader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* Kameranın kutuyu tam kaplamasını sağlayan sihirli CSS */
+        #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+
+        .qr-info-text { font-size: 12px; color: #666; text-align: center; line-height: 1.5; margin-bottom: 15px; }
+
+        .camera-btn {
+            background-color: #b8bc73; color: white; border: none; padding: 14px 20px;
+            border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(184, 188, 115, 0.4); width: 100%; transition: 0.2s;
+        }
+        .camera-btn:active { transform: scale(0.95); }
+
+        /* 🌟 SENİN KUSURSUZ BİLGİ KARTLARI TASARIMIN */
+        .waste-types-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+        .waste-type-card {
+            background-color: #ffffff; border-radius: 16px; padding: 12px;
+            display: flex; flex-direction: column; justify-content: center; gap: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #f0e9df;
+        }
+        
+        .card-top-row { display: flex; align-items: center; gap: 8px; }
+        .waste-icon {
+            width: 35px; height: 35px; display: flex; justify-content: center; align-items: center;
+            font-size: 18px; background-color: #e6cda3; border-radius: 10px; flex-shrink:0;
+        }
+        
+        .waste-name { font-size: 12px; font-weight: 700; color: #333; }
+        .waste-point { font-size: 10px; color: #5c704c; font-weight: 600; line-height: 1.3;}
+
+        /* ALT MENÜ */
+        .bottom-nav {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 70px;
+            background-color: #29432f; border-top-left-radius: 25px; border-top-right-radius: 25px;
+            display: flex; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 30;
+        }
+        .nav-link { flex: 1; display: flex; justify-content: center; align-items: center; text-decoration: none; height: 100%; }
+        .nav-link img { width: 50px; height: 50px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s ease; }
+        .center-nav-btn {
+            position: relative; top: -25px; width: 90px; height: 90px; background-color: #5c704c;
+            border: 5px solid #f8f5ee; border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.25); text-decoration: none; z-index: 40;
+        }
+        .center-nav-btn img { width: 40px; height: 40px; object-fit: contain; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Geri Dönüşüm</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:24px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <div class="qr-card">
+                <div class="qr-title">Geri Dönüştür & Kazan!</div>
+                
+                <div class="qr-image-box" id="qrContainer">
+                    <!-- Gerçek Kamera Buraya Gelecek -->
+                    <div id="reader" style="display:none;"></div>
+                    
+                    <!-- Kamera kapalıyken duracak olan çerçeve (Eski tasarımı koruyan kısım) -->
+                    <div id="placeholderContainer">
+                        <img src="images/qr.png" alt="QR Kod" style="width:100%; height:100%; object-fit:cover;" onerror="this.outerHTML='<div style=\'color:#5c704c; font-size:40px;\'>📷</div>'">
+                    </div>
+                </div>
+
+                <p class="qr-info-text">
+                    Kampüsümüzdeki akıllı geri dönüşüm kutularına atıklarını atarken kutunun üzerindeki <b>QR kodu</b> okut, sistem atığını tanısın!
+                </p>
+
+                <button class="camera-btn" id="openCameraBtn">Kamerayı Aç ve Okut</button>
+            </div>
+
+            <!-- BİLGİ KARTLARI -->
+            <div class="waste-types-grid">
+                <div class="waste-type-card">
+                    <div class="card-top-row">
+                        <div class="waste-icon">📄</div>
+                        <div class="waste-name">10 g Kağıt/Karton <br><span style="font-size: 10px; color: #d9534f;">(+10 YP)</span></div>
+                    </div>
+                    <div class="waste-point">10 g CO2, 0.04 kWh, 0.26 L su</div>
+                </div>
+
+                <div class="waste-type-card">
+                    <div class="card-top-row">
+                        <div class="waste-icon">🧴</div>
+                        <div class="waste-name">1 adet Plastik Şişe <br><span style="font-size: 10px; color: #d9534f;">(+30 YP)</span></div>
+                    </div>
+                    <div class="waste-point">30 g CO2, 0.1 kWh, 1.5 L su</div>
+                </div>
+
+                <div class="waste-type-card">
+                    <div class="card-top-row">
+                        <div class="waste-icon">🫙</div>
+                        <div class="waste-name">1 adet Cam Şişe <br><span style="font-size: 10px; color: #d9534f;">(+60 YP)</span></div>
+                    </div>
+                    <div class="waste-point">60 g CO2, 0.05 kWh</div>
+                </div>
+
+                <div class="waste-type-card">
+                    <div class="card-top-row">
+                        <div class="waste-icon">🥤</div>
+                        <div class="waste-name">1 adet Alüminyum Kutu <br><span style="font-size: 10px; color: #d9534f;">(+90 YP)</span></div>
+                    </div>
+                    <div class="waste-point">90 g CO2, 0.4 kWh</div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link"><img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:22px\'>💬</span>'"></a>
+            <a href="skor.html" class="nav-link"><img src="images/skor tablosu menu.png" alt="Skor Tablosu" onerror="this.outerHTML='<span style=\'font-size:22px\'>🏆</span>'"></a>
+            <a href="anasayfa.html" class="center-nav-btn"><img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:32px\'>🏠</span>'"></a>
+            <a href="quiz.html" class="nav-link"><img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:22px\'>❓</span>'"></a>
+            <a href="profil.html" class="nav-link"><img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:22px\'>👤</span>'"></a>
+        </nav>
+
+    </div>
+
+    <!-- 🧠 GERÇEK QR OKUYUCU VE AKILLI PUAN MOTORU -->
+   <!-- 🧠 GERÇEK QR OKUYUCU VE AKILLI PUAN MOTORU -->
+    <script>
+        const cameraBtn = document.getElementById('openCameraBtn');
+        const readerDiv = document.getElementById('reader');
+        const placeholderContainer = document.getElementById('placeholderContainer');
+        
+        let html5QrCode;
+        let isScanning = false;
+
+        cameraBtn.addEventListener('click', () => {
+            if(isScanning) return; 
+            isScanning = true;
+
+            placeholderContainer.style.display = 'none';
+            readerDiv.style.display = 'flex';
+            cameraBtn.innerText = `Kamera Açık - QR Okutun...`;
+            cameraBtn.style.backgroundColor = "#5c704c";
+
+            html5QrCode = new Html5Qrcode("reader");
+            
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 10, aspectRatio: 1.0 },
+                async (decodedText, decodedResult) => {
+                    html5QrCode.stop().then(async () => {
+                        isScanning = false;
+                        
+                        let atikAdi = "Atık";
+                        let kazanilacakPuan = 10;
+                        const okunanMetin = decodedText.toUpperCase();
+
+                        if (okunanMetin.includes("KAGIT") || okunanMetin.includes("KAĞIT")) {
+                            atikAdi = "Kağıt/Karton"; kazanilacakPuan = 10;
+                        } else if (okunanMetin.includes("PLASTIK") || okunanMetin.includes("PLASTİK")) {
+                            atikAdi = "Plastik Şişe"; kazanilacakPuan = 30;
+                        } else if (okunanMetin.includes("CAM")) {
+                            atikAdi = "Cam Şişe"; kazanilacakPuan = 60;
+                        } else if (okunanMetin.includes("ALUMINYUM") || okunanMetin.includes("ALÜMİNYUM")) {
+                            atikAdi = "Alüminyum Kutu"; kazanilacakPuan = 90;
+                        } else {
+                            atikAdi = "Geri Dönüştürülebilir Atık"; kazanilacakPuan = 10;
+                        }
+
+                        readerDiv.style.display = 'none';
+                        placeholderContainer.style.display = 'flex';
+                        placeholderContainer.innerHTML = `
+                            <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#5cb85c; background:#f0f8f1;">
+                                <span style="font-size:50px; margin-bottom:5px;">✅</span>
+                                <span style="font-size:14px; font-weight:700; text-align:center;">${atikAdi} Tanındı!</span>
+                            </div>`;
+                        
+                        cameraBtn.innerText = "Başarılı! Puan Eklendi.";
+                        cameraBtn.style.backgroundColor = "#5cb85c";
+
+                        alert(`Sistem QR kodunu taradı: ${atikAdi} tespit edildi.\nHarika! Geri dönüşüme katkı sağladın ve +${kazanilacakPuan} YP kazandın! ♻️`);
+
+                        let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
+                        let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0");
+                        localStorage.setItem("currentPoints", currentPoints + kazanilacakPuan);
+                        localStorage.setItem("totalEarned", totalEarned + kazanilacakPuan);
+
+                        // 🌟 YENİ SİHİR BURADA: Puan Geçmişi Listesine Ekleme!
+                        let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
+                        aktiviteGecmisi.push({ eylem: `${atikAdi} Ayrıştırıldı ♻️`, puan: kazanilacakPuan });
+                        if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift(); // Liste çok uzamasın diye son 20'yi tutar
+                        localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
+
+                        // Hem Puanı hem de Geçmişi Buluta Fırlat!
+                        if(window.bulutaPuanKaydet) await window.bulutaPuanKaydet();
+
+                        setTimeout(() => {
+                            placeholderContainer.innerHTML = '<img src="images/qr.png" alt="QR Kod" style="width:100%; height:100%; object-fit:cover;" onerror="this.outerHTML=\'<div style=\\\'color:#5c704c; font-size:40px;\\\'>📷</div>\'">';
+                            cameraBtn.innerText = "Kamerayı Aç ve Okut";
+                            cameraBtn.style.backgroundColor = "#b8bc73";
+                        }, 3000);
+
+                    }).catch((err) => { console.error("Kamera durdurulurken hata:", err); });
+                },
+                (errorMessage) => {}
+            ).catch((err) => {
+                alert("Kamera başlatılamadı! Lütfen tarayıcı ayarlarından kameraya izin verin.");
+                isScanning = false;
+                placeholderContainer.style.display = 'flex';
+                readerDiv.style.display = 'none';
+            });
+        });
+    </script>
+
+    <!-- ☁️ FİREBASE BULUT KAYIT MOTORU -->
+    <script type="module">
+        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+            authDomain: "yesilkampus-iuc.firebaseapp.com",
+            projectId: "yesilkampus-iuc",
+            storageBucket: "yesilkampus-iuc.firebasestorage.app",
+            messagingSenderId: "555123910788",
+            appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        let app;
+        try { app = initializeApp(firebaseConfig); } 
+        catch (e) { app = getApp(); }
+        const db = getFirestore(app);
+        
+        window.bulutaPuanKaydet = async function() {
+            const activeUser = localStorage.getItem("kampusUser") || "DemoKullanici";
+            let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
+            let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
+            // 🌟 YENİ SİHİR BURADA: Artık sadece puanı değil, geçmişi de buluta yolluyor!
+            let aktiviteGecmisi = JSON.parse(localStorage.getItem('aktiviteGecmisi')) || []; 
+            
+            try {
+                await setDoc(doc(db, "users", activeUser), {
+                    currentPoints: currentPoints,
+                    totalEarned: totalEarned,
+                    aktiviteGecmisi: aktiviteGecmisi 
+                }, { merge: true }); 
+                console.log("Puan ve geçmiş başarıyla buluta mühürlendi! ☁️🌿");
+            } catch (e) {
+                console.error("Buluta kaydedilirken hata oluştu: ", e);
+            }
+        };
+    </script>
+</body>
+</html>

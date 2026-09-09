@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Profil ve Gelişim</title>
+    <!-- Hesabı Sıfırlama Butonu -->
+    <button onclick="uretimiSifirla()" style="background-color: #E74C3C; color: white; border: none; padding: 8px 15px; border-radius: 10px; margin-top: 15px; font-weight: bold; cursor: pointer;">🔄 Üretimi Sıfırla</button>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. GENEL SIFIRLAMA VE BODY
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* =========================================
+           2. MOBİL ÇERÇEVE
+           ========================================= */
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            height: 100dvh; 
+            max-height: 850px;
+            background-color: #f8f5ee; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* =========================================
+           3. ÜST BAŞLIK BARI
+           ========================================= */
+        .top-header {
+            background-color: #5c704c; 
+            padding: 18px 20px 22px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* =========================================
+           4. ORTA İÇERİK ALANI
+           ========================================= */
+        .main-content {
+            flex: 1;
+            padding: 15px 15px 85px 15px; 
+            overflow-y: auto; /* SİHİR 1: Ekran kilidini açtık, sayfa artık aşağı kayabilecek! */
+            display: flex;
+            flex-direction: column;
+            gap: 12px; 
+        }
+
+        /* =========================================
+           5. SADECE PUAN GÖSTEREN ÜST KART
+           ========================================= */
+        .points-summary-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0e9df;
+            text-align: center;
+            width: 100%; 
+        }
+
+        .points-title {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .points-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #5c704c;
+            cursor: pointer; 
+            user-select: none;
+        }
+
+        /* =========================================
+           6. SEKMELER (TABS)
+           ========================================= */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            flex-shrink: 0; 
+        }
+
+        .tab-btn {
+            flex: 1;
+            background-color: #f8f5ee;
+            border: 1px solid #5c704c;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5c704c;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background-color: #5c704c;
+            color: #ffffff;
+        }
+
+        /* =========================================
+           7. ANA SEVİYE KARTI
+           ========================================= */
+        .level-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0e9df;
+            text-align: center;
+            position: relative;
+            flex-shrink: 0; /* SİHİR 2: Kart artık çelik gibi oldu, asla ezilip küçülmeyecek! */
+            min-height: 340px; /* SİHİR 3: Sekme değişince alttaki listenin zıplamasını kesin olarak önler */
+            display: flex;
+            flex-direction: column;
+            width: 100%; 
+        }
+
+        .level-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #5c704c;
+            margin-bottom: 4px;
+        }
+
+        .level-subtitle {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            min-height: 30px;
+        }
+
+        .growth-icon-box {
+            width: 100%;
+            flex: 1; 
+            min-height: 0; 
+            background-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px auto 10px;
+        }
+
+        .growth-icon-box img {
+            width: auto;
+            height: 100%;
+            max-height: 140px; 
+            object-fit: contain;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 14px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #f4cc3a; 
+            width: 0%; 
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            font-weight: 600;
+            color: #777;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        /* --- MEYVE BAHÇESİ IZGARASI --- */
+        .fruit-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        /* =========================================
+           8. KAZANILAN VE HARCANAN PUAN TABLOSU
+           ========================================= */
+        .stats-table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            flex-shrink: 0; 
+            margin-bottom: 5px;
+        }
+
+        .stat-cell {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #f0e9df;
+        }
+
+        .stat-cell-title {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .stat-cell-value.earned {
+            color: #5cb85c; 
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .stat-cell-value.spent {
+            color: #d9534f; 
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* =========================================
+           9. TOHUM SEÇİM MODALI
+           ========================================= */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .seed-modal {
+            background-color: #f8f5ee;
+            width: 85%;
+            border-radius: 24px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .seed-modal { transform: scale(1); }
+
+        .seed-modal h3 { color: #5c704c; font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+        .seed-modal p { font-size: 12px; color: #666; margin-bottom: 20px; }
+
+        .seed-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .seed-btn {
+            background-color: #ffffff;
+            border: 2px solid #e6cda3;
+            border-radius: 12px;
+            padding: 12px 5px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .seed-btn:active { transform: scale(0.95); background-color: #e6cda3; }
+        .seed-icon { font-size: 24px; }
+
+        /* =========================================
+           10. ALT NAVİGASYON MENÜSÜ
+           ========================================= */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f; 
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link { flex: 1; display: flex; justify-content: center; align-items: center; text-decoration: none; height: 100%; }
+        .nav-link img { width: 50px; height: 50px; object-fit: contain; opacity: 0.7; transition: opacity 0.2s ease; }
+        .nav-link.active img { opacity: 1; transform: scale(1.1); }
+
+        .center-nav-btn {
+            position: relative;
+            top: -25px; 
+            width: 90px; 
+            height: 90px; 
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee; 
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+        }
+
+        .center-nav-btn:active { transform: scale(0.92); }
+        .center-nav-btn img { width: 40px; height: 40px; object-fit: contain; }
+        
+        /* --- MEYVE GÖRSELLERİNİN BEYAZ ARKA PLANINI GİZLEME --- */
+        .fruit-grid img {
+            mix-blend-mode: multiply;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Gelişim Durumu</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:22px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <div class="points-summary-card">
+                <div class="points-title">Mevcut Yeşil Puanın</div>
+                <div class="points-value" id="topPointsDisplay" onclick="secretAddPoints()">0 YP</div>
+            </div>
+
+            <!-- SEKMELER -->
+            <div class="tab-container">
+                <button class="tab-btn active" id="tabSeram" onclick="switchTab('seram')">Mini Seram</button>
+                <button class="tab-btn" id="tabBahcem" onclick="switchTab('bahcem')">Meyve Bahçem</button>
+            </div>
+
+            <div class="level-card">
+                <!-- 🌿 MİNİ SERAM İÇERİĞİ -->
+                <div id="seramContent" style="display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; flex: 1;">
+                    <div class="level-title" id="levelTitle">Seviye 1: Kurak Toprak</div>
+                    <div class="level-subtitle" id="levelSubtitle">Çatlamış, susuz ve cansız bir zemin. Sürdürülebilirlik yolculuğun başlıyor.</div>
+
+                    <div class="growth-icon-box">
+                        <img src="images/seviyeler/seviye 1.png" alt="Seviye İllüstrasyonu" id="levelImage" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-size:60px;\'>🪨</span>';">
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    
+                    <div class="progress-text">
+                        <span id="currentPointsText">0 YP</span>
+                        <span id="targetPointsText">Sonraki: 250 YP</span>
+                    </div>
+                </div>
+
+                <!-- 🍎 MEYVE BAHÇEM İÇERİĞİ -->
+                <div id="bahcemContent" style="display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; flex: 1; overflow-y: auto;">
+                    <div class="level-title">Meyve Bahçem</div>
+                    <div class="level-subtitle">Şimdiye kadar yetiştirdiğin tüm meyveler burada sergilenir.</div>
+                    
+                    <div class="fruit-grid" id="fruitKoleksiyon">
+                        <div style="font-size: 12px; color: #666; grid-column: span 3; padding: 20px; text-align: center;">
+                            Henüz meyve yetiştirmedin. Fidanlarını büyütmeye devam et! 🌱
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🌟 YENİ: PUAN GEÇMİŞİ TABLOSU (Genişletildi ve Ezilmeye Karşı Korundu) -->
+            <div style="background-color: #ffffff; border-radius: 20px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0e9df; width: 100%; margin-bottom: 5px; flex-shrink: 0;">
+                <h3 style="font-size: 14px; font-weight: 700; color: #5c704c; margin-bottom: 12px; text-align: center;">Puan Geçmişim 📜</h3>
+                
+                <!-- max-height 180px'den 240px'e çıkarıldı ki daha çok liste görünsün -->
+                <div id="activityList" style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; padding-right: 5px;">
+                    <!-- JavaScript ile aktiviteler buraya eklenecek -->
+                    <div style="text-align: center; font-size: 12px; color: #999; padding: 10px;">Henüz bir aktivite yok. Doğayı korumaya başla! 🌱</div>
+                </div>
+            </div>
+
+        </main>
+
+        <div class="modal-overlay" id="seedModal">
+            <div class="seed-modal">
+                <h3>Tohumunu Seç!</h3>
+                <p>1000 Puana ulaştın. Hangi meyve ağacını yetiştirmek istersin?</p>
+                <div class="seed-grid">
+                    <button class="seed-btn" onclick="selectSeed('Elma')"><span class="seed-icon">🍎</span> Elma</button>
+                    <button class="seed-btn" onclick="selectSeed('Şeftali')"><span class="seed-icon">🍑</span> Şeftali</button>
+                    <button class="seed-btn" onclick="selectSeed('Portakal')"><span class="seed-icon">🍊</span> Portakal</button>
+                    <button class="seed-btn" onclick="selectSeed('Kiraz')"><span class="seed-icon">🍒</span> Kiraz</button>
+                    <button class="seed-btn" onclick="selectSeed('Muz')"><span class="seed-icon">🍌</span> Muz</button>
+                    <button class="seed-btn" onclick="selectSeed('Üzüm')"><span class="seed-icon">🍇</span> Üzüm</button>
+                    <button class="seed-btn" onclick="selectSeed('Mango')"><span class="seed-icon">🥭</span> Mango</button>
+                    <button class="seed-btn" onclick="selectSeed('Avokado')"><span class="seed-icon">🥑</span> Avokado</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link"><img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'"></a>
+            <a href="skor.html" class="nav-link"><img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'"></a>
+            <a href="anasayfa.html" class="center-nav-btn"><img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'"></a>
+            <a href="quiz.html" class="nav-link"><img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'"></a>
+            <a href="profil.html" class="nav-link active"><img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'"></a>
+        </nav>
+
+    </div>
+
+    <!-- FİREBASE VERİTABANI VE GELİŞİM SİSTEMİ -->
+    <script type="module">
+        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+          authDomain: "yesilkampus-iuc.firebaseapp.com",
+          projectId: "yesilkampus-iuc",
+          storageBucket: "yesilkampus-iuc.firebasestorage.app",
+          messagingSenderId: "555123910788",
+          appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        let app;
+        try { app = initializeApp(firebaseConfig); } 
+        catch (e) { app = getApp(); }
+        const db = getFirestore(app);
+        
+        const activeUser = localStorage.getItem("kampusUser") || "DemoKullanici";
+
+        let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0'); 
+        let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');     
+        let chosenSeed = localStorage.getItem('kampusTohumu') || null;
+        let meyveKoleksiyonu = JSON.parse(localStorage.getItem('meyveKoleksiyonu')) || [];
+        // 🌟 YENİ: Aktivite Geçmişi Dizisi
+        let aktiviteGecmisi = JSON.parse(localStorage.getItem('aktiviteGecmisi')) || [];
+
+        // 🌟 1. YENİ: BULUTTAN VERİ ÇEKME (AKILLI SENKRONİZASYON) 🌟
+        async function fetchFromCloud() {
+            try {
+                const docSnap = await getDoc(doc(db, "users", activeUser));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    let cloudEarned = data.totalEarned || 0;
+                    let localEarned = parseInt(localStorage.getItem('totalEarned') || '0');
+
+                    // SİHİRLİ DOKUNUŞ: Eğer buluttaki puan cihazdan DÜŞÜKSE cihazı ezme!
+                    // Tam tersine, bağlantı kopmuş demektir; cihazdaki güncel veriyi buluta gönder.
+                    if (cloudEarned >= localEarned) {
+                        currentPoints = data.currentPoints || 0;
+                        totalEarned = cloudEarned;
+                        totalSpent = data.totalSpent || 0;
+                        chosenSeed = data.kampusTohumu || null;
+                        meyveKoleksiyonu = data.meyveKoleksiyonu || [];
+                        aktiviteGecmisi = data.aktiviteGecmisi || [];
+                        updateUI(); 
+                    } else {
+                        // Cihazdaki puan daha yüksek. Hemen cihazdakini buluta göndererek eşitliği sağla!
+                        saveToCloud();
+                    }
+                }
+            } catch (e) {
+                console.log("Buluttan veri çekilirken hata:", e);
+            }
+        }
+
+        async function saveToCloud() {
+            try {
+                await setDoc(doc(db, "users", activeUser), {
+                    currentPoints: currentPoints,
+                    totalEarned: totalEarned,
+                    kampusTohumu: chosenSeed,
+                    fidanCount: Math.floor(currentPoints / 10000),
+                    meyveKoleksiyonu: meyveKoleksiyonu,
+                    aktiviteGecmisi: aktiviteGecmisi // Buluta geçmişi kaydet
+                }, { merge: true }); 
+            } catch (e) {
+                console.log("Buluta kaydedilirken hata:", e);
+            }
+        }
+
+       // 🌟 "Yeşil Kampüs Muhafızı" Botu ile Resimli Tebrik Gönderisi 🌟
+        async function otomatikMeyveGonderisi(meyveAdi) {
+            try {
+                // Kullanıcının adını alıyoruz
+                const userName = localStorage.getItem("kampusUser") || "Kullanıcı";
+                
+                // Botun duyuru metni
+                const botMesaji = `Tebrikler! ${userName} '${meyveAdi}' meyvesini yetiştirdi ve kampüse bir fidan kazandırdı 🌳✨`;
+                
+                // 📸 İŞTE BURASI: Tebrik kartı resminin yolu
+                const tebrikGorseli = "images/tebrik_karti.png"; // İstersen adını kendi resmine göre değiştirebilirsin
+                
+                // Firestore'a doğrudan gönderiyi fırlatıyoruz
+                await addDoc(collection(db, "posts"), {
+                    author: "Yeşil Kampüs Muhafızı", 
+                    text: botMesaji,
+                    timestamp: serverTimestamp(),
+                    image: tebrikGorseli, // 🌟 Artık 'null' değil, resmi gönderiyoruz!
+                    youtube: null
+                });
+                
+                console.log("Yeşil Kampüs Muhafızı başarıyla resimli duyuru yaptı!");
+            } catch (e) {
+                console.log("Otomatik gönderi paylaşılamadı:", e);
+            }
+        }
+
+        const levels = [
+            { threshold: 0, title: "Seviye 1: Kurak Toprak", subtitle: "Çatlamış, susuz ve cansız bir zemin. Sürdürülebilirlik yolculuğun başlıyor.", img: "seviye 1.png", emoji: "🪨" },
+            { threshold: 250, title: "Seviye 2: Nemli Toprak", subtitle: "Kazanılan puanların suyuyla ıslanmış, normale dönmüş ama henüz verimsiz toprak.", img: "seviye 2.png", emoji: "🟫" },
+            { threshold: 500, title: "Seviye 3: Verimli Toprak", subtitle: "Su ve emekle ıslah edilmiş, humusu bol, ekime ve hayata tamamen hazır sağlıklı zemin.", img: "seviye 3.png", emoji: "🪴" },
+            { threshold: 1000, title: "Seviye 4: Bekleyen Tohum", subtitle: "Verimli toprağın şefkatle sardığı ilk tohum. Sadece hasarı düzeltmiyor, yeni yaşamın temelini atıyorsun.", img: "seviye 4.png", emoji: "🫘" },
+            { threshold: 2000, title: "Seviye 5: Yeşeren Filiz", subtitle: "Tohumun toprağı yarıp güneşe merhaba dediği o ilk yeşil uç.", img: "seviye 5.png", emoji: "🌱" },
+            { threshold: 3000, title: "Seviye 6: Kök Salan Fidan", subtitle: "Rüzgara direnmeye başlayan, toprağa sıkıca tutunan genç bir fidan.", img: "seviye 6.png", emoji: "🌿" },
+            { threshold: 4000, title: "Seviye 7: Gürbüz Ağaç", subtitle: "Gövdesi kalınlaşmış, yaprakları gürleşmiş sağlıklı bir ağaç. Ciddi bir karbon yutağı yarattın!", img: "seviye 7.png", emoji: "🌳" },
+            { threshold: 5000, title: "Seviye 8: Çiçeklenen Dal", subtitle: "Doğaya renk katan, polenleri ve çiçekleriyle diğer canlıları da kendine çeken estetik dönem.", img: "seviye 8.png", emoji: "🌸" },
+            { threshold: 7500, title: "Seviye 9: Meyve Veren Ağaç", subtitle: "Ekolojik döngüyü besleyen, doğaya somut fayda sağlayan olgun ağaç.", img: "seviye 9.png", emoji: "🍎" },
+            { threshold: 10000, title: "Seviye 10: Meyve", subtitle: "Zirve noktası! Etrafında canlıların olduğu kusursuz, kendi kendine yeten mini bir ekosistem yarattın.", img: "seviye 10.png", emoji: "✨" }
+        ];
+
+        const seedFileMap = { 'Elma': 'elma', 'Şeftali': 'seftali', 'Portakal': 'portakal', 'Kiraz': 'kiraz', 'Muz': 'muz', 'Üzüm': 'uzum', 'Mango': 'mango', 'Avokado': 'avokado' };
+
+        function updateUI() {
+            localStorage.setItem('currentPoints', currentPoints);
+            localStorage.setItem('totalEarned', totalEarned);
+            localStorage.setItem('meyveKoleksiyonu', JSON.stringify(meyveKoleksiyonu));
+            localStorage.setItem('aktiviteGecmisi', JSON.stringify(aktiviteGecmisi));
+
+            let fidanCount = Math.floor(currentPoints / 10000);
+            let displayPoints = currentPoints % 10000; 
+            let treePoints = currentPoints; 
+            let isWaitingPeriod = false;
+
+            if (fidanCount > 0) {
+                if (displayPoints < 1000) { treePoints = 10000; isWaitingPeriod = true; } 
+                else { treePoints = displayPoints - 1000; }
+            }
+
+            if (treePoints < 1000 && chosenSeed !== null) {
+                let kazanilanMeyve = chosenSeed; 
+                if (!meyveKoleksiyonu.includes(chosenSeed)) meyveKoleksiyonu.push(chosenSeed);
+                otomatikMeyveGonderisi(kazanilanMeyve);
+                chosenSeed = null;
+                localStorage.removeItem('kampusTohumu');
+                saveToCloud(); 
+            }
+
+            let currentLevelIndex = 0;
+            for (let i = 0; i < levels.length; i++) {
+                if (treePoints >= levels[i].threshold) currentLevelIndex = i;
+            }
+
+            const currentLevel = levels[currentLevelIndex];
+            const nextLevel = levels[currentLevelIndex + 1];
+            let topDisplayText = fidanCount > 0 ? `${fidanCount} Fidan + ${displayPoints} YP` : `${displayPoints} YP`;
+
+            document.getElementById('topPointsDisplay').innerText = topDisplayText;
+            document.getElementById('currentPointsText').innerText = topDisplayText;
+            
+            let finalTitle = currentLevel.title;
+            if (chosenSeed && (currentLevelIndex >= 3 || isWaitingPeriod)) finalTitle += ` (${chosenSeed})`;
+            document.getElementById('levelTitle').innerText = finalTitle;
+            document.getElementById('levelSubtitle').innerText = currentLevel.subtitle;
+
+            let imgName = currentLevel.img; 
+            if (chosenSeed && (currentLevelIndex >= 3 || isWaitingPeriod)) {
+                let filePrefix = seedFileMap[chosenSeed] || 'elma';
+                let imgLevel = isWaitingPeriod ? 10 : (currentLevelIndex + 1);
+                imgName = `${filePrefix} seviye ${imgLevel}.png`;
+            }
+            
+            const imgContainer = document.querySelector('.growth-icon-box');
+            if (imgContainer) {
+                imgContainer.innerHTML = `<img src="images/seviyeler/${imgName}" alt="Seviye" id="levelImage" onerror="this.outerHTML='<span style=\\'font-size:70px;\\'>${currentLevel.emoji}</span>'">`;
+            }
+
+            if (nextLevel && !isWaitingPeriod) {
+                document.getElementById('targetPointsText').innerText = `Sonraki: ${nextLevel.threshold} YP`;
+                let progressPercent = ((treePoints - currentLevel.threshold) / (nextLevel.threshold - currentLevel.threshold)) * 100;
+                progressPercent = Math.max(0, Math.min(100, progressPercent)); 
+                document.getElementById('progressBar').style.width = `${progressPercent}%`;
+                if (treePoints >= 1000 && !chosenSeed) document.getElementById('seedModal').classList.add('active');
+            } else {
+                document.getElementById('targetPointsText').innerText = "Maksimum Seviye!";
+                document.getElementById('progressBar').style.width = `100%`;
+            }
+
+            renderKoleksiyon();
+            renderAktiviteGecmisi();
+        }
+
+        // 🌟 YENİ: Geçmişi Ekrana Çizme Fonksiyonu
+        function renderAktiviteGecmisi() {
+            const listContainer = document.getElementById('activityList');
+            if (!listContainer) return;
+
+            if (aktiviteGecmisi.length === 0) {
+                listContainer.innerHTML = '<div style="text-align: center; font-size: 12px; color: #999; padding: 10px;">Henüz bir aktivite yok. Doğayı korumaya başla! 🌱</div>';
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            // En son yapılan işlem en üstte çıksın diye listeyi ters çevirip basıyoruz
+            [...aktiviteGecmisi].reverse().forEach(islem => {
+                listContainer.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f5ee; padding: 10px; border-radius: 12px; border: 1px solid #e6cda3;">
+                        <span style="font-size: 12px; font-weight: 600; color: #333;">${islem.eylem}</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #5cb85c;">+${islem.puan} YP</span>
+                    </div>
+                `;
+            });
+        }
+
+        window.selectSeed = function(seedName) {
+            chosenSeed = seedName;
+            localStorage.setItem('kampusTohumu', seedName);
+            document.getElementById('seedModal').classList.remove('active');
+            updateUI();
+            saveToCloud(); 
+        }
+
+        window.switchTab = function(tabName) {
+            if(tabName === 'seram') {
+                document.getElementById('seramContent').style.display = 'flex';
+                document.getElementById('bahcemContent').style.display = 'none';
+                document.getElementById('tabSeram').classList.add('active');
+                document.getElementById('tabBahcem').classList.remove('active');
+            } else {
+                document.getElementById('seramContent').style.display = 'none';
+                document.getElementById('bahcemContent').style.display = 'flex';
+                document.getElementById('tabBahcem').classList.add('active');
+                document.getElementById('tabSeram').classList.remove('active');
+            }
+        }
+
+        window.secretAddPoints = function() {
+            currentPoints += 500;
+            totalEarned += 500;
+            // Test için manuel ekleme yapıldığında listeye eklensin
+            aktiviteGecmisi.push({ eylem: "Gizli Puan Ödülü 🎁", puan: 500 });
+            // Liste çok uzamasın diye son 20 aktiviteyi tutalım
+            if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift(); 
+            
+            updateUI();
+            saveToCloud(); 
+        }
+
+        window.uretimiSifirla = async function() {
+            if(confirm("Meyve üretimini ve puanlarını sıfırlamak istediğine emin misin aşkım? 🌱\n(Sadece puanlar ve koleksiyon gidecek, hesabın kalacak)")) {
+                currentPoints = 0; totalEarned = 0; chosenSeed = null; meyveKoleksiyonu = []; aktiviteGecmisi = [];
+                localStorage.setItem('currentPoints', '0'); localStorage.setItem('totalEarned', '0');
+                localStorage.removeItem('kampusTohumu');
+                localStorage.setItem('meyveKoleksiyonu', JSON.stringify([]));
+                localStorage.setItem('aktiviteGecmisi', JSON.stringify([]));
+                updateUI(); await saveToCloud();
+                alert("Tertemiz bir başlangıç! Puanların ve meyvelerin sıfırlandı bebeğim ✨");
+            }
+        }
+
+        function renderKoleksiyon() {
+            const bahce = document.getElementById('fruitKoleksiyon');
+            if (!bahce) return;
+            if (meyveKoleksiyonu.length === 0) {
+                bahce.innerHTML = '<div style="font-size: 12px; color: #666; grid-column: span 3; padding: 20px; text-align: center;">Henüz meyve yetiştirmedin. Fidanlarını büyütmeye devam et! 🌱</div>';
+                return;
+            }
+            bahce.innerHTML = ''; 
+            meyveKoleksiyonu.forEach(meyve => {
+                let imgPrefix = seedFileMap[meyve] || 'elma';
+                let imgSrc = `images/seviyeler/${imgPrefix} seviye 10.png`; 
+                bahce.innerHTML += `
+                    <div style="background: #f8f5ee; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; border: 1px solid #e6cda3;">
+                        <img src="${imgSrc}" style="width: 50px; height: 50px; object-fit: contain;" alt="${meyve}" onerror="this.style.display='none'">
+                        <span style="font-size: 11px; font-weight: 600; color: #5c704c; margin-top: 5px;">${meyve}</span>
+                    </div>`;
+            });
+        }
+
+        updateUI();
+        fetchFromCloud();
+    </script>
+</body>
+</html>

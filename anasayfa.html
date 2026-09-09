@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Ana Sayfa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- GENEL SIFIRLAMA --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- MOBİL ÇERÇEVE (AÇIK KREM ZEMİN) --- */
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #f8f5ee; /* Açık Krem / Bej Zemin */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- ÜST YEŞİL KAVİSLİ BAŞLIK BAR --- */
+        .top-header {
+            background-color: #5c704c; /* Zeytin Yeşili Header */
+            padding: 18px 20px 22px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            position: relative;
+            z-index: 10;
+        }
+
+        .menu-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background-color: #ffffff;
+            border-radius: 2px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 85px olan alt boşluğu 140px yaparak butonları çiçeğin üstüne kurtardık! */
+        .main-content { 
+            flex: 1; 
+            padding: 20px 20px 85px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+        }
+
+       /* --- ANA SAYFA ORTALANMIŞ SOFT PINK PUAN KUTUSU --- */
+        .welcome-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(230, 205, 163, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Sağ taraftaki puan alanını ortalayan ve soft pink kutucuk yapan stil */
+        #anaSayfaPuan {
+            background-color: #F3E5D8; /* Soft Pink / Krem uyumlu pudra tonu */
+            color: #5c704c;            /* Temamızın yeşiliyle uyumlu yazı rengi */
+            padding: 10px 14px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;    /* Fidan üstte, YP altta alt alta durur */
+            justify-content: center;
+            align-items: center;       /* Yazıları tam ortalar */
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            min-width: 95px;
+        }
+
+        #anaSayfaPuan .fidan-text {
+            font-size: 11px;
+            font-weight: 700;
+            color: #5c704c;
+            margin-bottom: 2px;
+        }
+
+        #anaSayfaPuan .puan-text {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .welcome-text h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .welcome-text p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .score-pill {
+            background-color: #5c704c;
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(92, 112, 76, 0.25);
+        }
+
+        /* --- 4 ANA MODÜL (IZGARA YAPISI & BÜYÜK İKONLAR) --- */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .module-card {
+            background-color: #ffffff;
+            border-radius: 22px;
+            padding: 22px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0e9df;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .module-card:active {
+            transform: scale(0.96);
+        }
+
+        .module-icon-box {
+            width: 85px;
+            height: 85px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .module-icon-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .module-title {
+            color: #333333;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* --- ALT NAVİGASYON MENÜSÜ --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f; /* Bej Alt Bar */
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .nav-link img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link.active img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+       /* Ortadaki Yeşil Yuvarlak (Ana Sayfa) Butonu */
+        .center-nav-btn {
+            position: relative;
+            top: -25px; /* Daha da yukarı fırladı */
+            width: 90px; /* Çapı büyütüldü */
+            height: 90px; /* Çapı büyütüldü */
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee; /* Sayfa zemin rengiyle aynı çerçeve */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+            
+        }
+
+        .center-nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        .center-nav-btn img {
+            width: 40px; /* İçindeki ikon daha büyük */
+            height: 40px;
+            object-fit: contain;
+        }
+
+        /* --- YANDAN AÇILAN AYARLAR MENÜSÜ (SIDE MENU) --- */
+        .side-menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .side-menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .side-menu {
+            position: absolute;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background-color: #f8f5ee;
+            z-index: 101;
+            transition: left 0.3s ease;
+            padding: 35px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+        }
+
+        .side-menu.open {
+            left: 0;
+        }
+
+        .side-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e6cda3;
+            padding-bottom: 12px;
+        }
+
+        .side-menu-header h3 {
+            color: #5c704c;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 10px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .menu-item:hover {
+            background-color: #e6cda3;
+        }
+
+        .lang-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .kvkk-box {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e6cda3;
+            margin-top: 10px;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: #d9534f;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <h1 class="header-title">Yeşil Kampüs</h1>
+
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:24px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <!-- Merhaba Kartına Fotoğraf Eklendi! -->
+            <div class="welcome-card">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <!-- Fotoğraf Yoksa Çıkacak Yedek Resim Ayarlandı -->
+                    <img id="homeProfilePic" src="images/profil menu.png" alt="Profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #5c704c; display: none;">
+                    
+                    <div class="welcome-text">
+                        <h2 id="welcomeName">Merhaba! 👋</h2>
+                        <p>Her gün biraz daha yeşil bir kampüs!</p>
+                    </div>
+                </div>
+                <div class="puan-kutusu" id="anaSayfaPuan">0 YP</div>
+            </div>
+
+            <div class="modules-grid">
+                
+                <a href="atik.html" class="module-card">
+                    <div class="module-icon-box">
+                        <img src="images/atık geri dönüşüm.png" alt="Geri Dönüşüm" onerror="this.outerHTML='<span style=\'font-size:45px\'>♻️</span>'">
+                    </div>
+                    <span class="module-title">Geri Dönüşüm</span>
+                </a>
+
+                <a href="gps.html" class="module-card">
+                    <div class="module-icon-box">
+                        <img src="images/gps.png" alt="Karbonsuz Ulaşım" onerror="this.outerHTML='<span style=\'font-size:45px\'>📍</span>'">
+                    </div>
+                    <span class="module-title">Karbonsuz Ulaşım</span>
+                </a>
+
+                <a href="merdiven.html" class="module-card">
+                    <div class="module-icon-box">
+                        <img src="images/merdiven.png" alt="Asansör: NO, Merdiven: YES!" onerror="this.outerHTML='<span style=\'font-size:45px\'>🪜</span>'">
+                    </div>
+                    <span class="module-title">Asansör: NO, Merdiven: YES!</span>
+                </a>
+
+                <a href="yesil_odak.html" class="module-card">
+                    <div class="module-icon-box">
+                        <img src="images/yeşil odak.png" alt="Yeşil Odak" onerror="this.outerHTML='<span style=\'font-size:45px\'>🌱</span>'">
+                    </div>
+                    <span class="module-title">Yeşil Odak</span>
+                </a>
+
+            </div>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link">
+                <img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:22px\'>💬</span>'">
+            </a>
+
+            <a href="skor.html" class="nav-link">
+                <img src="images/skor tablosu menu.png" alt="Skor Tablosu" onerror="this.outerHTML='<span style=\'font-size:22px\'>🏆</span>'">
+            </a>
+
+            <a href="anasayfa.html" class="center-nav-btn active">
+                <img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:32px\'>🏠</span>'">
+            </a>
+
+            <a href="quiz.html" class="nav-link">
+                <img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:22px\'>❓</span>'">
+            </a>
+
+            <a href="profil.html" class="nav-link">
+                <img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:22px\'>👤</span>'">
+            </a>
+        </nav>
+
+        <!-- YANDAN AÇILAN MENÜ VE ONAYLI KODLAR BURADAN BAŞLIYOR -->
+        <div class="side-menu-overlay" id="menuOverlay" onclick="closeMenu(event)">
+            <div class="side-menu" id="sideMenu">
+                <div class="side-menu-header">
+                    <h3>Ayarlar & Bilgi</h3>
+                    <button class="close-btn" onclick="closeMenu(event)">✕</button>
+                </div>
+
+                <label style="font-size:12px; font-weight:600; color:#5c704c;">Uygulama Dili</label>
+                <select class="lang-select">
+                    <option value="tr">Türkçe TR</option>
+                    <option value="en">English EN</option>
+                </select>
+
+                <a href="#sss" class="menu-item" onclick="alert('SSS: Sürdürülebilirlik görevlerini tamamlayarak puan kazanabilirsiniz!')">
+                    <img src="images/sss.png" alt="SSS" style="width: 32px; height: 32px; object-fit: contain;"> Sıkça Sorulan Sorular
+                </a>
+
+                <a href="mailto:aleynaaydin@ogr.iuc.edu.tr" class="menu-item">
+                    <img src="images/iletişim.png" alt="İletişim" style="width: 32px; height: 32px; object-fit: contain;"> İletişim & Destek
+                </a>
+
+                <a href="profil_ayarlari.html" class="menu-item">
+                    <img src="images/ayarlar.png" alt="Ayarlar" style="width: 32px; height: 32px; object-fit: contain;"> Profil Ayarları
+                </a>
+
+                <div class="kvkk-box">
+                    <strong>Gizlilik & KVKK:</strong> Yeşil Kampüs, verilerinizi anonim olarak işler ve sürdürülebilirlik takibi dışında paylaşmaz.
+                </div>
+                
+                <!-- 🚪 TASARIMI YENİLENMİŞ ÇIKIŞ YAP BUTONU -->
+                <a href="#" class="menu-item logout-btn" style="margin-top: auto; justify-content: center; color: #d9534f; background-color: rgba(217, 83, 79, 0.1); padding: 15px; border-radius: 12px;">
+                    <img src="images/çıkış yap.png" alt="Çıkış" style="width: 32px; height: 32px; object-fit: contain;">
+                    <span style="font-weight: 700; font-size: 16px;">Çıkış Yap</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SADELEŞTİRİLMİŞ VE KUSURSUZ JAVASCRIPT KODLARI (FİREBASE BAĞLANTILI) -->
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+            authDomain: "yesilkampus-iuc.firebaseapp.com",
+            projectId: "yesilkampus-iuc",
+            storageBucket: "yesilkampus-iuc.firebasestorage.app",
+            messagingSenderId: "555123910788",
+            appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const db = getFirestore(app);
+
+        // Menü fonksiyonlarını HTML'in görebilmesi için window objesine ekliyoruz
+        window.toggleMenu = function() {
+            document.getElementById('menuOverlay').classList.toggle('open');
+            document.getElementById('sideMenu').classList.toggle('open');
+        }
+
+        window.closeMenu = function(event) {
+            if (!event || event.target.id === 'menuOverlay' || event.target.classList.contains('close-btn')) {
+                document.getElementById('menuOverlay').classList.remove('open');
+                document.getElementById('sideMenu').classList.remove('open');
+            }
+        }
+
+        // Puanı Ekrana Çizen Yardımcı Fonksiyon
+        function ekraniGuncelle(currentPoints) {
+            let fidanCount = Math.floor(currentPoints / 10000);
+            let displayPoints = currentPoints % 10000;
+            
+            const puanKutusu = document.getElementById("anaSayfaPuan");
+            if (puanKutusu) {
+                if (fidanCount > 0) {
+                    puanKutusu.innerHTML = `
+                        <span class="fidan-text">🌳 ${fidanCount} Fidan</span>
+                        <span class="puan-text">+ ${displayPoints} YP</span>
+                    `;
+                } else {
+                    puanKutusu.innerHTML = `
+                        <span class="puan-text">${currentPoints} YP</span>
+                    `;
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            // 1. Önce hafızadaki puanı (varsa) beklemeden ekrana basıyoruz
+            let localPoints = parseInt(localStorage.getItem("currentPoints") || "0");
+            ekraniGuncelle(localPoints);
+
+            // Profil fotoğrafını göster
+            const savedPhoto = localStorage.getItem('profilePhotoBase64');
+            const homeProfilePic = document.getElementById('homeProfilePic');
+            if (homeProfilePic) {
+                homeProfilePic.style.display = 'block';
+                if (savedPhoto) homeProfilePic.src = savedPhoto;
+            }
+
+            // 2. 🌟 SİHİRLİ DOKUNUŞ: GİRİŞ YAPILDIYSA FİREBASE'DEN GERÇEK VERİLERİ İNDİR 🌟
+            const activeUser = localStorage.getItem("kampusUser");
+            if (activeUser) {
+                try {
+                    const docSnap = await getDoc(doc(db, "users", activeUser));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const cloudPoints = data.currentPoints || 0;
+                        
+                        // Eksik verileri Firebase'den çekip tarayıcının hafızasına geri yüklüyoruz!
+                        localStorage.setItem("currentPoints", cloudPoints);
+                        if (data.totalEarned !== undefined) localStorage.setItem("totalEarned", data.totalEarned);
+                        if (data.kampusTohumu) localStorage.setItem("kampusTohumu", data.kampusTohumu);
+                        if (data.meyveKoleksiyonu) localStorage.setItem("meyveKoleksiyonu", JSON.stringify(data.meyveKoleksiyonu));
+                        if (data.aktiviteGecmisi) localStorage.setItem("aktiviteGecmisi", JSON.stringify(data.aktiviteGecmisi));
+
+                        // Ekranı gerçek puanla tazele
+                        ekraniGuncelle(cloudPoints);
+                    }
+                } catch (e) {
+                    console.log("Buluttan puan çekilirken hata:", e);
+                }
+            }
+        });
+    </script>
+
+    <!-- 🚀 FİREBASE MOTORU GÜVENLE BAĞLANDI 🚀 -->
+    <script type="module" src="app.js"></script>
+
+</body>
+</html>

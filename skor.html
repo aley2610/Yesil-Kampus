@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Skor Tablosu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           1. GENEL SIFIRLAMA VE TEMEL AYARLAR
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+        /* =========================================
+           2. MOBİL ÇERÇEVE
+           ========================================= */
+        .app-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 400px; 
+            height: 100vh; 
+            max-height: 850px; 
+            background-color: #f8f5ee; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+        }
+
+        /* =========================================
+           3. ÜST BAŞLIK BARI
+           ========================================= */
+        .top-header { 
+            background-color: #5c704c; 
+            padding: 18px 20px 22px; 
+            border-bottom-left-radius: 28px; 
+            border-bottom-right-radius: 28px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: #ffffff; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12); 
+            flex-shrink: 0; 
+            z-index: 10; }
+
+        .back-btn { 
+            background: rgba(255, 255, 255, 0.2); 
+            border: none; 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 12px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            text-decoration: none; 
+            color: white; 
+            font-size: 18px; 
+            font-weight: bold; }
+
+        .header-title { 
+            font-size: 18px; 
+            font-weight: 700; 
+            letter-spacing: 0.5px; }
+
+        .header-logo { 
+            width: 35px; 
+            height: 35px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; }
+
+        .header-logo img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; }
+
+        /* =========================================
+           4. ORTA İÇERİK ALANI
+           ========================================= */
+        .score-page-content { 
+            flex: 1; 
+            padding: 16px 20px 140px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; }
+
+        .score-title-box { 
+            background-color: #ffffff; 
+            border-radius: 16px; 
+            padding: 14px 18px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: #5c704c; 
+            border: 1px solid #f0e9df; 
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03); 
+            margin-bottom: 4px; }
+
+        .score-list { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; }
+        
+        .score-row { 
+            background-color: #ffffff; 
+            color: #333333; 
+            width: 100%; 
+            padding: 15px 20px; 
+            border-radius: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-sizing: border-box; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border: 1px solid #f0e9df; }
+
+        .row-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 14px; }
+
+        .rank-number { 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: #5c704c; 
+            width: 22px; 
+            text-align: center; }
+
+        .rank-1 { 
+            color: #d4af37; } 
+
+        /* İsim ve meyvelerin dikeyde kusursuz hizalanması için sihirli kutu */
+        .user-name {
+            display: inline-flex;
+            align-items: center; /* Resim büyüse bile yazıyı hep tam ortada tutar */
+            gap: 4px; /* İsimle ve meyvelerle arasına tatlı bir boşluk koyar */
+            font-size: 13px; /* Daha önce muhtemelen 15px veya 16px'ti */
+            font-weight: 700; /* Çok kalın (bold/700) duruyorsa biraz incelttik */
+        }
+
+        .user-points { 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: #5c704c; 
+            background-color: #f8f5ee; 
+            padding: 4px 10px; 
+            border-radius: 10px; }
+        
+        .score-row.highlighted { 
+            background-color: #e6cda3; 
+            border: 1px solid #d8bd93; }
+
+        .score-row.highlighted .user-name,
+        .score-row.highlighted .rank-number,
+        .score-row.highlighted .user-points { 
+            color: #333; 
+            font-weight: 700; }
+
+        /* =========================================
+           5. SABİT PUAN KUTUSU
+           ========================================= */
+        .sticky-user-score { 
+            position: sticky; 
+            bottom: 110px; 
+            width: 90%; 
+            margin: 0 auto; 
+            background-color: #597858; 
+            color: #ffffff; 
+            padding: 15px 20px; 
+            border-radius: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 14px; 
+            box-sizing: border-box; 
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.15); 
+            z-index: 100; }
+
+        .sticky-left { 
+            font-size: 14px; 
+            font-weight: 500; }
+
+        .sticky-right { 
+            font-size: 14px; 
+            font-weight: 700; 
+            background-color: #f4cc3a; 
+            color: #333; 
+            padding: 6px 15px; 
+            border-radius: 15px; }
+
+        /* =========================================
+           6. ALT NAVİGASYON MENÜSÜ
+           ========================================= */
+        .bottom-nav { 
+            position: absolute; 
+            bottom: 0; left: 0; 
+            width: 100%; 
+            height: 70px; 
+            background-color: #29432f; 
+            border-top-left-radius: 25px; 
+            border-top-right-radius: 25px; 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            padding: 0 10px; 
+            z-index: 30; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08); }
+
+        .nav-link { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-decoration: none; 
+            height: 100%; }
+
+        .nav-link img { 
+            width: 50px; 
+            height: 50px; 
+            object-fit: contain; 
+            opacity: 0.7; 
+            transition: opacity 0.2s ease; }
+
+        .nav-link.active img { 
+            opacity: 1; 
+            transform: scale(1.1); }
+
+        .center-nav-btn { 
+            position: relative; 
+            top: -25px; 
+            width: 90px; 
+            height: 90px; 
+            background-color: #5c704c; 
+            border: 5px solid #f8f5ee; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25); 
+            text-decoration: none; 
+            z-index: 40; }
+
+        .center-nav-btn img { 
+            width: 40px; 
+            height: 40px; 
+            object-fit: contain; }
+
+            /* --- SKOR TABLOSU MEYVE İKONU --- */
+        .skor-meyve {
+            width: 35px; /* İsmin yanına tam sığacak zarif boyut */
+            height: 35px;
+            object-fit: contain;
+            /* Eğer arka planı silmeye üşenirsen diye, o sihirli blend kodunu buraya da ekliyorum: */
+            mix-blend-mode: multiply; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Skor Tablosu</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:22px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <!-- SADECE ORTA İÇERİK: SKOR TABLOSU -->
+        <main class="score-page-content">
+            <div class="score-title-box">Bu tabloda kampüsteki diğer oyuncuların skorları yer almaktadır.</div>
+
+            <!-- Sıralama Listesi -->
+            <div class="score-list" id="gercekSkorListesi">
+                <!-- Javascript ile senin verin beyaz kutu olarak eklenecek -->
+            </div>
+        </main>
+
+        <!-- KULLANICININ SABİT YEŞİL KUTUCUĞU -->
+        <div class="sticky-user-score">
+            <div class="sticky-left" id="skorUserRankText">📍 Sıralaman: <b>1. Sıradasın</b></div>
+            <div class="sticky-right" id="skorUserPointsPill">0 YP</div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link"><img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'"></a>
+            <a href="skor.html" class="nav-link active"><img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'"></a>
+            <a href="anasayfa.html" class="center-nav-btn"><img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'"></a>
+            <a href="quiz.html" class="nav-link"><img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'"></a>
+            <a href="profil.html" class="nav-link"><img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'"></a>
+        </nav>
+
+    </div>
+
+    <!-- GERÇEK ZAMANLI VERİTABANI BAĞLANTISI -->
+    <script type="module">
+        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+          authDomain: "yesilkampus-iuc.firebaseapp.com",
+          projectId: "yesilkampus-iuc",
+          storageBucket: "yesilkampus-iuc.firebasestorage.app",
+          messagingSenderId: "555123910788",
+          appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        let app;
+        try { app = initializeApp(firebaseConfig); }
+        catch (e) { app = getApp(); }
+        const db = getFirestore(app);
+
+        async function loadLeaderboard() {
+            const listContainer = document.getElementById("gercekSkorListesi");
+            const activeUser = localStorage.getItem("kampusUser") || "Öğrenci";
+            let localPoints = localStorage.getItem("currentPoints") || "0";
+
+            if (listContainer) {
+                listContainer.innerHTML = "<p style='text-align:center; color:#E2D3B7; font-size:14px; margin-top: 15px;'>Skorlar yükleniyor... ⏳</p>";
+            }
+
+            try {
+                // Firebase'deki tüm kullanıcıları puanlarına göre yüksekten düşüğe doğru sıralayarak çağırıyoruz
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, orderBy("currentPoints", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                let htmlContent = "";
+                let rank = 1;
+                let myRank = "-";
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const userName = doc.id; 
+                    const points = data.currentPoints || 0;
+
+                    if (userName === activeUser) {
+                        myRank = rank;
+                        localPoints = points; // Buluttaki kesin puanımızı cebe attık
+                        
+                        // Kendi satırımızı farklı renkte (Açık Yeşil) yapıyoruz ki hemen fark edilsin!
+                        htmlContent += `
+                            <div class="score-row" style="background-color: #d4edda; border: 2px solid #5c704c; color: #1A2E25;">
+                                <span>${rank}</span>
+                                <span style="font-weight: bold;">${userName} (Sen)</span>
+                                <span style="font-weight: bold;">${points} YP</span>
+                            </div>
+                        `;
+                    } else {
+                        // Diğer kullanıcıların satırı standart görünüm
+                        htmlContent += `
+                            <div class="score-row">
+                                <span>${rank}</span>
+                                <span>${userName}</span>
+                                <span>${points} YP</span>
+                            </div>
+                        `;
+                    }
+                    rank++;
+                });
+
+                if (listContainer) listContainer.innerHTML = htmlContent;
+
+                // Alttaki sabit kullanıcının yeşil/sarı bilgi kutucuklarını güvene alma
+                const rankEl = document.getElementById("skorUserRank");
+                const nameEl = document.getElementById("skorUserName");
+                const pointsEl = document.getElementById("skorUserPoints");
+                const rankTextEl = document.getElementById("skorUserRankText");
+                const pillEl = document.getElementById("skorUserPointsPill");
+
+                if(rankEl) rankEl.innerText = myRank;
+                if(nameEl) nameEl.innerText = `${activeUser} (Sen)`;
+                if(pointsEl) pointsEl.innerText = `${localPoints} YP`;
+                if(rankTextEl) rankTextEl.innerText = `Sıralaman: ${myRank}. Sıradasın`;
+                if(pillEl) pillEl.innerText = `${localPoints} YP`;
+
+            } catch (error) {
+                console.log("Skor tablosu çekilirken hata:", error);
+                if (listContainer) {
+                    listContainer.innerHTML = "<p style='text-align:center; color:#E2D3B7; margin-top: 15px;'>Skorlar yüklenemedi. İnternet bağlantınızı kontrol edin.</p>";
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadLeaderboard();
+        });
+    </script>
+</body>
+</html>

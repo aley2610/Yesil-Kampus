@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Profil Ayarları</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .app-container { position: relative; width: 100%; max-width: 400px; height: 100vh; max-height: 850px; background-color: #f8f5ee; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        
+        .top-header { background-color: #5c704c; padding: 18px 20px 22px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; z-index: 10; }
+        .back-btn { background: rgba(255, 255, 255, 0.2); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; text-decoration: none; color: white; font-size: 18px; font-weight: bold; }
+        .header-title { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+        .header-logo { width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+        .main-content { flex: 1; padding: 25px 20px 90px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+        /* Profil Fotoğrafı Alanı */
+        .profile-pic-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .profile-pic { width: 110px; height: 110px; border-radius: 50%; background-color: #e6cda3; border: 4px solid #5c704c; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .change-photo-btn { background-color: #b8bc73; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .change-photo-btn:active { transform: scale(0.95); }
+
+        /* Form Kartı */
+        .settings-card { background-color: #ffffff; border-radius: 20px; padding: 20px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0e9df; display: flex; flex-direction: column; gap: 12px; }
+        
+        .input-group { display: flex; flex-direction: column; gap: 4px; }
+        .input-group label { font-size: 12px; font-weight: 600; color: #5c704c; padding-left: 5px; }
+        .input-group input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid #e6cda3; background-color: #f8f5ee; font-size: 13px; color: #333; outline: none; }
+        .input-group input:read-only { background-color: #eee; color: #777; border-color: #ddd; }
+        .input-group input:focus:not(:read-only) { border-color: #5c704c; }
+
+        .save-btn { background-color: #5c704c; color: white; border: none; padding: 15px; border-radius: 15px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.2s; box-shadow: 0 4px 10px rgba(92, 112, 76, 0.3); }
+        .save-btn:active { transform: scale(0.97); }
+
+        /* Alt Navigasyon */
+        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; background-color: #29432f; border-top-left-radius: 25px; border-top-right-radius: 25px; display: flex; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 30; }
+        .nav-link { flex: 1; display: flex; justify-content: center; align-items: center; text-decoration: none; height: 100%; }
+        .nav-link img { width: 50px; height: 50px; object-fit: contain; opacity: 0.7; }
+        .center-nav-btn { position: relative; top: -25px; width: 90px; height: 90px; background-color: #5c704c; border: 5px solid #f8f5ee; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.25); text-decoration: none; z-index: 40; }
+        .center-nav-btn img { width: 40px; height: 40px; object-fit: contain; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Profil Ayarları</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:22px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <!-- Profil Fotoğrafı Yükleme Alanı -->
+            <div class="profile-pic-wrapper">
+                <img src="images/profil menu.png" id="displayPic" class="profile-pic" alt="Profil Fotoğrafı">
+                <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+                <button class="change-photo-btn" onclick="document.getElementById('photoUpload').click()">
+                    📷 Fotoğrafı Değiştir
+                </button>
+            </div>
+
+            <!-- Kullanıcı Bilgileri ve Güvenli Şifre Formu -->
+            <div class="settings-card">
+                <div class="input-group">
+                    <label>Kullanıcı Adı</label>
+                    <input type="text" id="displayUsername" value="Yükleniyor..." readonly>
+                </div>
+
+                <div class="input-group">
+                    <label>Kayıtlı E-posta</label>
+                    <input type="email" id="displayEmail" value="Yükleniyor..." readonly>
+                </div>
+
+                <div style="height: 1px; background-color: #e6cda3; margin: 8px 0;"></div>
+
+                <div class="input-group">
+                    <label>Mevcut Şifre</label>
+                    <input type="password" id="oldPassword" placeholder="Şu anki şifreniz">
+                </div>
+
+                <div class="input-group">
+                    <label>Yeni Şifre</label>
+                    <input type="password" id="newPassword" placeholder="En az 6 haneli yeni şifre">
+                </div>
+
+                <div class="input-group">
+                    <label>Yeni Şifre (Tekrar)</label>
+                    <input type="password" id="newPasswordConfirm" placeholder="Yeni şifrenizi tekrar girin">
+                </div>
+
+                <button id="saveChangesBtn" class="save-btn">Değişiklikleri Kaydet</button>
+            </div>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link"><img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:20px\'>💬</span>'"></a>
+            <a href="skor.html" class="nav-link"><img src="images/skor tablosu menu.png" alt="Skor" onerror="this.outerHTML='<span style=\'font-size:20px\'>🏆</span>'"></a>
+            <a href="anasayfa.html" class="center-nav-btn"><img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:30px\'>🏠</span>'"></a>
+            <a href="quiz.html" class="nav-link"><img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:20px\'>❓</span>'"></a>
+            <a href="profil.html" class="nav-link"><img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:20px\'>👤</span>'"></a>
+        </nav>
+
+    </div>
+
+    <!-- Firebase Bağlantısı ve Güvenli Şifre Motoru -->
+    <script type="module">
+        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        // 🌟 SİHİR BURADA: Eski şifreyi doğrulamak için EmailAuthProvider'ı çağırdık!
+        import { getAuth, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+            authDomain: "yesilkampus-iuc.firebaseapp.com",
+            projectId: "yesilkampus-iuc",
+            storageBucket: "yesilkampus-iuc.firebasestorage.app",
+            messagingSenderId: "555123910788",
+            appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        let app;
+        try { app = initializeApp(firebaseConfig); } 
+        catch (e) { app = getApp(); }
+        const auth = getAuth(app);
+
+        // Kullanıcı Bilgilerini Ekrana Yazdırma
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('displayEmail').value = user.email;
+                const localName = localStorage.getItem("kampusUser") || user.displayName || user.email.split('@')[0];
+                document.getElementById('displayUsername').value = localName;
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        // Fotoğrafı Kaydetme
+        const displayPic = document.getElementById('displayPic');
+        const photoUpload = document.getElementById('photoUpload');
+        
+        const savedPhoto = localStorage.getItem('profilePhotoBase64');
+        if(savedPhoto) { displayPic.src = savedPhoto; }
+
+        photoUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64String = event.target.result;
+                    displayPic.src = base64String;
+                    localStorage.setItem('profilePhotoBase64', base64String); 
+                    // Hızlı tepki vermesi için ufacık bir alert:
+                    alert("Fotoğrafın başarıyla cihaza kaydedildi aşkım! 📸");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // GÜVENLİ ŞİFRE DEĞİŞTİRME İŞLEMİ
+        document.getElementById('saveChangesBtn').addEventListener('click', () => {
+            const oldPass = document.getElementById('oldPassword').value.trim();
+            const newPass = document.getElementById('newPassword').value.trim();
+            const newPassConfirm = document.getElementById('newPasswordConfirm').value.trim();
+            const user = auth.currentUser;
+
+            // Hiç şifre girilmediyse uyarı verip durdur
+            if(oldPass === "" && newPass === "") {
+                return; // Fotoğraf zaten kaydedildiği için bir şey yapmıyoruz
+            }
+
+            if(oldPass === "") {
+                alert("Şifreni değiştirmek için önce 'Mevcut Şifre'ni girmelisin bebeğim! 🔒");
+                return;
+            }
+
+            if(newPass.length < 6) {
+                alert("Yeni şifren en az 6 haneli olmalı! 🥺");
+                return;
+            }
+
+            if(newPass !== newPassConfirm) {
+                alert("Yeni girdiğin şifreler birbiriyle eşleşmiyor, lütfen kontrol et! ❌");
+                return;
+            }
+
+            if(user) {
+                // 1. Önce eski şifreyle Firebase'e "Bu hesabı ben yönetiyorum" diyoruz (Re-authenticate)
+                const credential = EmailAuthProvider.credential(user.email, oldPass);
+                
+                reauthenticateWithCredential(user, credential).then(() => {
+                    // 2. Eski şifre doğruysa yeni şifreyi kaydet
+                    return updatePassword(user, newPass);
+                }).then(() => {
+                    alert("Harika! Şifren güvenle güncellendi. 🎉");
+                    document.getElementById('oldPassword').value = ""; 
+                    document.getElementById('newPassword').value = ""; 
+                    document.getElementById('newPasswordConfirm').value = ""; 
+                }).catch((error) => {
+                    alert("Şifre güncellenemedi: Mevcut şifreni yanlış girmiş olabilir misin? 🤔");
+                });
+            }
+        });
+    </script>
+</body>
+</html>
