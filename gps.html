@@ -407,13 +407,13 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
    
-    <!-- 1. HARİTA VE SAYAÇ MOTORU (Normal Script Kutusu) -->
+    <!-- 1. HARİTA VE GERÇEK GPS TAKİP MOTORU -->
     <script>
-        // Harita Başlatma Koordinatları
-        const lat = 40.9855;
-        const lng = 28.7245;
+        // Harita Başlatma Koordinatları (İÜC Avcılar Kampüsü)
+        const defaultLat = 40.9855;
+        const defaultLng = 28.7245;
         
-        const map = L.map('map', { zoomControl: false }).setView([lat, lng], 16);
+        const map = L.map('map', { zoomControl: false }).setView([defaultLat, defaultLng], 16);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -426,34 +426,67 @@
             iconSize: [18, 18]
         });
 
-        let marker = L.marker([lat, lng], {icon: customIcon}).addTo(map);
+        let marker = L.marker([defaultLat, defaultLng], {icon: customIcon}).addTo(map);
 
-        // Sayaç ve Gerçek GPS Takip Mantığı
         let isTracking = false;
         let timer = null;
+        let watchId = null;
+        let lastLat = null;
+        let lastLng = null;
+        let lastTime = null;
         let seconds = 0;
         let distance = 0;
         let points = 0;
 
-        // Ekrana tıklanınca sorunsuz çalışması için window objesine ekliyoruz
+        // İki GPS noktası arasındaki gerçek mesafeyi hesaplayan Haversine formülü (km cinsinden)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; 
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
         window.toggleTracking = function() {
             const btn = document.getElementById('toggleBtn');
             const dot = document.getElementById('statusDot');
             const text = document.getElementById('statusText');
 
             if (!isTracking) {
-                // GERÇEK GPS İZNİ İSTİYORUZ
-                // GERÇEK VE YÜKSEK HASSASİYETLİ GPS İZNİ İSTİYORUZ
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition((position) => {
-                        const userLat = position.coords.latitude;
-                        const userLng = position.coords.longitude;
-                        
-                        // Haritayı kullanıcının gerçek konumuna kaydır
-                        map.setView([userLat, userLng], 17);
-                        marker.setLatLng([userLat, userLng]);
+                if (!navigator.geolocation) {
+                    alert("Tarayıcın GPS özelliğini desteklemiyor.");
+                    return;
+                }
 
-                        // İzin alındı, yürüyüşü başlat!
+                // Yeni yürüyüş için değerleri sıfırla
+                seconds = 0;
+                distance = 0;
+                points = 0;
+                lastLat = null;
+                lastLng = null;
+                lastTime = null;
+
+                document.getElementById('distVal').innerText = "0.00 km";
+                document.getElementById('timeVal').innerText = "00:00";
+                document.getElementById('pointVal').innerText = "+0 YP";
+                text.innerText = "GPS Aranıyor...";
+
+                // Cihazın anlık konum hareketlerini izlemeye başla
+                watchId = navigator.geolocation.watchPosition((position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const accuracy = position.coords.accuracy; // Metre cinsinden hata payı
+                    const currentTime = Date.now();
+
+                    // Haritayı ve ikonu her zaman kullanıcının bulunduğu yere getir
+                    map.setView([userLat, userLng], 17);
+                    marker.setLatLng([userLat, userLng]);
+
+                    // Takip arayüzünü ve sayacı ilk konum alındığında başlat
+                    if (!isTracking) {
                         isTracking = true;
                         btn.classList.add('recording');
                         btn.innerHTML = '<span>⏹</span> Yürüyüşü Bitir';
@@ -462,50 +495,91 @@
 
                         timer = setInterval(() => {
                             seconds++;
-                            distance += 0.0012; 
-                            points = Math.floor(distance * 120);
-
                             const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
                             const secs = String(seconds % 60).padStart(2, '0');
                             document.getElementById('timeVal').innerText = `${mins}:${secs}`;
-                            document.getElementById('distVal').innerText = `${distance.toFixed(2)} km`;
-                            document.getElementById('pointVal').innerText = `+${points} YP`;
                         }, 1000);
+                    }
 
-                    }, (error) => {
-                        alert("Konum izni alınamadı aşkım! 😔 Lütfen cihazının konum (GPS) servislerinin açık olduğundan emin ol.");
-                    }, { 
-                        // 🌟 İŞTE SİHİRLİ KISIM BURASI: Cihazı en net konumu bulmaya zorlar!
-                        enableHighAccuracy: true, 
-                        timeout: 10000, 
-                        maximumAge: 0 
-                    });
-                } else {
-                    alert("Tarayıcın GPS özelliğini desteklemiyor.");
-                }
+                    // 1. FİLTRE: GPS doğruluğu çok düşükse (hata payı 30 metreden fazlaysa) mesafeye katma
+                    if (accuracy > 30) {
+                        console.warn(`GPS sinyali zayıf (Hata payı: ${Math.round(accuracy)}m), hareket bekleniyor...`);
+                        return;
+                    }
+
+                    // 2. FİLTRE: Gerçek hareket ve hız kontrolü
+                    if (lastLat !== null && lastLng !== null && lastTime !== null) {
+                        const movedKm = calculateDistance(lastLat, lastLng, userLat, userLng);
+                        const movedMeters = movedKm * 1000;
+                        const timeDiffSec = (currentTime - lastTime) / 1000;
+
+                        // Sabit dururken oluşan GPS titremelerini (sapmalarını) önlemek için:
+                        // En az 7 metre (veya GPS hata payının yarısı kadar) hareket edilmiş olmalı
+                        const minThresholdMeters = Math.max(7, accuracy * 0.4);
+
+                        if (movedMeters >= minThresholdMeters && timeDiffSec > 0) {
+                            const speedMps = movedMeters / timeDiffSec; // Saniyedeki hız (m/s)
+
+                            // Yürüyüş/Koşu hızı kontrolü: 0.4 m/s (1.4 km/s) ile 4.5 m/s (16 km/s) arası
+                            // Böylece hem ani GPS sıçramaları hem de araçla seyahat elenir
+                            if (speedMps >= 0.4 && speedMps <= 4.5) {
+                                distance += movedKm;
+                                points = Math.floor(distance * 120);
+                                document.getElementById('distVal').innerText = `${distance.toFixed(2)} km`;
+                                document.getElementById('pointVal').innerText = `+${points} YP`;
+                            }
+
+                            // Yeni referans noktasını güncelle
+                            lastLat = userLat;
+                            lastLng = userLng;
+                            lastTime = currentTime;
+                        }
+                    } else {
+                        // İlk geçerli konum kaydı
+                        lastLat = userLat;
+                        lastLng = userLng;
+                        lastTime = currentTime;
+                    }
+
+                }, (error) => {
+                    alert("Konum izni alınamadı! Lütfen GPS servisinin açık olduğundan emin ol.");
+                    text.innerText = "Bekliyor";
+                }, { 
+                    enableHighAccuracy: true, 
+                    timeout: 15000, 
+                    maximumAge: 0 
+                });
+
             } else {
-                // YÜRÜYÜŞ BİTTİĞİNDE ÇALIŞACAK KISIM
+                // Yürüyüş bittiğinde
                 isTracking = false;
                 clearInterval(timer);
+                if (watchId !== null) {
+                    navigator.geolocation.clearWatch(watchId);
+                    watchId = null;
+                }
+                lastLat = null;
+                lastLng = null;
+                lastTime = null;
+
                 btn.classList.remove('recording');
                 btn.innerHTML = '<span>▶</span> Yürüyüşü Başlat';
                 dot.classList.remove('active');
-                text.innerText = 'Buluta Kaydediliyor... ⏳'; // Kullanıcıyı uyarıyoruz
+                text.innerText = 'Buluta Kaydediliyor... ⏳';
 
                 let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
                 let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0");
                 localStorage.setItem("currentPoints", currentPoints + points);
                 localStorage.setItem("totalEarned", totalEarned + points);
 
-                if(points > 0) {
+                if (points > 0) {
                     let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
                     aktiviteGecmisi.push({ eylem: "Karbonsuz Ulaşım (GPS) 🚶‍♀️", puan: points });
-                    if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
+                    if (aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
                     localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
                 }
 
-                // 🌟 SİHİRLİ DOKUNUŞ: Puan buluta gidene kadar bekle, GİTTİKTEN SONRA alert ver!
-                if(window.bulutaPuanKaydet) {
+                if (window.bulutaPuanKaydet) {
                     window.bulutaPuanKaydet().then(() => {
                         text.innerText = 'Tamamlandı';
                         alert(`Tebrikler! Yürüyüşün buluta güvenle kaydedildi 🎉\nKazanılan Puan: +${points} YP`);

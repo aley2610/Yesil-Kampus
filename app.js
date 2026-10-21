@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
@@ -42,10 +42,9 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // =========================================
-// 2. GİRİŞ, KAYIT VE ÇIKIŞ (HAYAT KURTARAN EVENT DELEGATION)
+// 2. GİRİŞ, KAYIT, ÇIKIŞ VE ŞİFRE SIFIRLAMA (TEK MERKEZDEN YÖNETİM)
 // =========================================
-document.addEventListener("click", (e) => {
-    
+document.addEventListener("click", async (e) => {    
     // 🚪 ÇIKIŞ YAP (Nereye tıklarsan tıkla yakalar!)
     const logoutBtn = e.target.closest(".logout") || e.target.closest(".logout-btn");
     if (logoutBtn) {
@@ -69,10 +68,18 @@ document.addEventListener("click", (e) => {
             return;
         }
 
-        signInWithEmailAndPassword(auth, email, password)
-            .catch((error) => {
-                alert("Giriş Başarısız! Şifren veya mailin yanlış.");
-            });
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            
+            // 🌟 Kullanıcının maili doğrulanmamışsa girişi engelle
+            if (!userCredential.user.emailVerified) {
+                await auth.signOut(); // Hemen çıkış yaptır
+                alert("Giriş başarısız! E-posta adresini henüz doğrulamadın. Lütfen mailine gelen doğrulama linkine tıkla. 📩");
+                return;
+            }
+        } catch (error) {
+            alert("Giriş Başarısız! Şifren veya mailin yanlış.");
+        }
         return;
     }
 
@@ -101,22 +108,77 @@ document.addEventListener("click", (e) => {
         localStorage.clear();
         localStorage.setItem("isRegistering", "true");
 
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                return updateProfile(userCredential.user, { displayName: username });
-            })
-            .then(() => {
-                return auth.signOut();
-            })
-            .then(() => {
-                localStorage.removeItem("isRegistering");
-                alert("🎉 Kayıt Başarılı! Yeni hesabınla giriş yapabilirsin.");
-                window.location.href = "index.html";
-            })
-            .catch((error) => {
-                localStorage.removeItem("isRegistering");
-                alert("Kayıt Başarısız: Bu mail alınmış veya şifre çok kısa.");
-            });
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, { displayName: username });
+            
+            // 🌟 Doğrulama mailini gönderiyoruz
+            await sendEmailVerification(userCredential.user);
+            
+            await auth.signOut();
+            localStorage.removeItem("isRegistering");
+            alert("🎉 Kayıt Başarılı! Ancak giriş yapabilmek için okul e-postana gönderilen linke tıklayarak hesabını doğrulamalısın. (Spam klasörüne bakmayı unutma!) 🌿");
+            window.location.href = "index.html";
+        } catch (error) {
+            localStorage.removeItem("isRegistering");
+            alert("Kayıt Başarısız: Bu mail alınmış veya şifre çok kısa.");
+        }
         return;
     }
+
+    // 🔄 ŞİFREMİ UNUTTUM
+    if (e.target.id === "forgotPasswordBtn") {
+        e.preventDefault(); // Sayfanın yenilenmesini engelle
+    
+        // E-posta kutusuna yazılan maili al
+        const email = document.getElementById("email")?.value.trim();
+
+        if (!email) {
+            alert("Aşkm, şifre sıfırlama linki gönderebilmemiz için önce e-posta adresini kutucuğa yazmalısın! 🌿");
+            return;
+        }
+
+        // Sadece İÜC maillerine izin ver (Güvenlik)
+        if (!email.endsWith("@ogr.iuc.edu.tr") && !email.endsWith("@iuc.edu.tr")) {
+            alert("Sadece @ogr.iuc.edu.tr veya @iuc.edu.tr uzantılı mailler için şifre sıfırlanabilir!");
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            alert("🎉 Şifre sıfırlama linki mailine gönderildi! Lütfen gelen kutunu (veya spam klasörünü) kontrol et.");
+        } catch (error) {
+            console.error("Firebase Şifre Sıfırlama Hatası:", error);
+            
+            if (error.code === 'auth/user-not-found') {
+                alert("Bu e-posta adresiyle kayıtlı bir hesap bulunamadı.");
+            } else if (error.code === 'auth/invalid-email') {
+                alert("Geçersiz bir e-posta adresi formatı.");
+            } else {
+                alert("Bir hata oluştu: Lütfen daha sonra tekrar dene.");
+            }
+        }
+        return;
+    }
+});
+
+// Sayfanın en üstünde olması gereken importlar
+import { collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { db } from "./firebase-config.js";
+
+// Yeşil Kampüs aktif görevi gerçek zamanlı dinleme fonksiyonu
+const q = query(collection(db, "WeeklyTasks"), where("isActive", "==", true));
+
+onSnapshot(q, (snapshot) => {
+  snapshot.forEach((doc) => {
+    const task = doc.data();
+    
+    // HTML'deki yerlerine verileri yazdırıyoruz
+    document.getElementById("active-task-title").innerText = "🌱 " + task.title;
+    document.getElementById("active-task-desc").innerText = task.description;
+    document.getElementById("active-task-points").innerText = "+" + task.ecoPoints + " YP";
+    
+    // Veri başarıyla gelince kutucuğu görünür yap
+    document.getElementById("weekly-task-card").style.display = "block";
+  });
 });

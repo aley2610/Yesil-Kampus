@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Bildirimler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #f8f5ee;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .top-header {
+            background-color: #5c704c;
+            padding: 18px 20px 22px;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            position: relative;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 20px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px 20px 85px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .notifications-header h3 {
+            font-size: 16px;
+            color: #5c704c;
+            font-weight: 700;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-text {
+            background: #e6cda3;
+            color: #333;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .btn-text:active {
+            transform: scale(0.96);
+        }
+
+        .notif-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            padding: 6px 14px;
+            border-radius: 14px;
+            border: 1px solid #e6cda3;
+            background: #ffffff;
+            color: #555;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: #5c704c;
+            color: #ffffff;
+            border-color: #5c704c;
+        }
+
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #f0e9df;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notification-card:active {
+            transform: scale(0.98);
+        }
+
+        .notification-card.unread {
+            background: #eef5eb;
+            border-color: #a4b27d;
+        }
+
+        .notification-card.unread::after {
+            content: '';
+            width: 9px;
+            height: 9px;
+            background: #5c704c;
+            border-radius: 50%;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+
+        .notif-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #f8f5ee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+            border: 1px solid #e6cda3;
+        }
+
+        .notif-content {
+            flex: 1;
+            padding-right: 12px;
+        }
+
+        .notif-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .notif-desc {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .notif-time {
+            font-size: 10.5px;
+            color: #888;
+            display: inline-block;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 35px 20px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            border: 1px dashed #e6cda3;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .nav-link img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .center-nav-btn {
+            position: relative;
+            top: -25px;
+            width: 90px;
+            height: 90px;
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+        }
+
+        .center-nav-btn img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn" title="Ana Sayfaya Dön">←</a>
+            <h1 class="header-title">Bildirimler</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:24px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="notifications-header">
+                <h3>Son Bildirimler</h3>
+                <div class="header-btns">
+                    <button id="mark-all-read" class="btn-text">Tümünü Okundu İşaretle</button>
+                </div>
+            </div>
+
+            <div class="notif-tabs">
+                <button class="tab-btn active" data-filter="all">Tümü</button>
+                <button class="tab-btn" data-filter="unread">Okunmamış</button>
+                <button class="tab-btn" data-filter="likes">❤️ Beğeniler</button>
+            </div>
+
+            <div class="notifications-list" id="notifications-container">
+                <!-- Bildirimler JS ile buraya yüklenecek -->
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link">
+                <img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:22px\'>💬</span>'">
+            </a>
+
+            <a href="skor.html" class="nav-link">
+                <img src="images/skor tablosu menu.png" alt="Skor Tablosu" onerror="this.outerHTML='<span style=\'font-size:22px\'>🏆</span>'">
+            </a>
+
+            <a href="anasayfa.html" class="center-nav-btn">
+                <img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:32px\'>🏠</span>'">
+            </a>
+
+            <a href="quiz.html" class="nav-link">
+                <img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:22px\'>❓</span>'">
+            </a>
+
+            <a href="profil.html" class="nav-link">
+                <img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:22px\'>👤</span>'">
+            </a>
+        </nav>
+
+    </div>
+
+    <!-- FIREBASE VE BİLDİRİM YÖNETİMİ -->
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
+            authDomain: "yesilkampus-iuc.firebaseapp.com",
+            projectId: "yesilkampus-iuc",
+            storageBucket: "yesilkampus-iuc.firebasestorage.app",
+            messagingSenderId: "555123910788",
+            appId: "1:555123910788:web:2965b070f132129e853ad1"
+        };
+
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        const db = getFirestore(app);
+
+        const varsayilanBildirimler = [
+            {
+                id: 101,
+                icon: "❤️",
+                title: "Gönderin Beğenildi!",
+                desc: "Kampüs akışında paylaştığın geri dönüşüm fotoğrafı bir kampüslü tarafından beğenildi.",
+                time: "Az önce",
+                unread: true,
+                type: "like"
+            },
+            {
+                id: 102,
+                icon: "🌱",
+                title: "Puan Kazandın!",
+                desc: "Geri dönüşüm kutusuna attığın atık doğrulandı, +50 YP hesabına eklendi.",
+                time: "10 dk önce",
+                unread: true,
+                type: "system"
+            },
+            {
+                id: 103,
+                icon: "📢",
+                title: "Kampüs Duyurusu",
+                desc: "Yarın düzenlenecek fidan dikim etkinliğine davetlisin!",
+                time: "Dün",
+                unread: false,
+                type: "system"
+            }
+        ];
+
+        let notifications = JSON.parse(localStorage.getItem("kampusBildirimler")) || varsayilanBildirimler;
+        let activeFilter = "all";
+
+        const container = document.getElementById("notifications-container");
+        const markAllBtn = document.getElementById("mark-all-read");
+        const activeUser = localStorage.getItem("kampusUser");
+
+        // Hem LocalStorage hem Firebase'i senkronize kaydetme
+        async function saveAndRender() {
+            localStorage.setItem("kampusBildirimler", JSON.stringify(notifications));
+            renderNotifications();
+
+            if (activeUser) {
+                try {
+                    const userRef = doc(db, "users", activeUser);
+                    await updateDoc(userRef, { bildirimler: notifications });
+                } catch (e) {
+                    console.log("Buluta bildirim kaydedilirken hata:", e);
+                }
+            }
+        }
+
+        function renderNotifications() {
+            container.innerHTML = "";
+
+            let filtered = notifications;
+            if (activeFilter === "unread") {
+                filtered = notifications.filter(n => n.unread);
+            } else if (activeFilter === "likes") {
+                filtered = notifications.filter(n => n.icon === "❤️" || n.type === "like");
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        🌿 Bu kategoride gösterilecek bildirim bulunmuyor.
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement("div");
+                card.className = `notification-card ${item.unread ? "unread" : ""}`;
+                card.innerHTML = `
+                    <div class="notif-icon">${item.icon}</div>
+                    <div class="notif-content">
+                        <p class="notif-title">${item.title}</p>
+                        <p class="notif-desc">${item.desc}</p>
+                        <span class="notif-time">${item.time}</span>
+                    </div>
+                `;
+
+                card.addEventListener("click", () => {
+                    if (item.unread) {
+                        item.unread = false;
+                        saveAndRender();
+                    }
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        markAllBtn.addEventListener("click", () => {
+            notifications.forEach(n => n.unread = false);
+            saveAndRender();
+        });
+
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                activeFilter = btn.getAttribute("data-filter");
+                renderNotifications();
+            });
+        });
+
+        // Firebase'den kullanıcıya gelen yeni beğeni bildirimlerini gerçek zamanlı dinle
+        if (activeUser) {
+            const userRef = doc(db, "users", activeUser);
+            onSnapshot(userRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.bildirimler && Array.isArray(data.bildirimler) && data.bildirimler.length > 0) {
+                        notifications = data.bildirimler;
+                        localStorage.setItem("kampusBildirimler", JSON.stringify(notifications));
+                        renderNotifications();
+                    }
+                }
+            });
+        }
+
+        // İlk açılışta çiz
+        renderNotifications();
+    </script>
+
+</body>
+</html>

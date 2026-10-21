@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yeşil Kampüs - Görev Merkezi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- GENEL AYARLAR VE SIFIRLAMA --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #333; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- MOBİL UYGULAMA ÇERÇEVESİ --- */
+        .app-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #f8f5ee; /* Krem Zemin */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- ÜST YEŞİL BAŞLIK BARI --- */
+        /* Diğer sayfalarındaki header'ı ana sayfa ile birebir aynı boyuta getiren kodlar */
+
+        .top-header {
+            background-color: #5c704c;
+            padding: 18px 20px 22px; /* Ana sayfadaki ile birebir aynı iç boşluk */
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            position: relative;
+            flex-shrink: 0; /* Küçülmesini veya genleşmesini engeller */
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 38px;  /* 40px'den 38px'e düşürüldü (Ana sayfadaki menu-toggle ile aynı) */
+            height: 38px; /* 40px'den 38px'e düşürüldü */
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 18px; /* 20px'den 18px'e düşürüldü */
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 18px; /* 20px'den 18px'e düşürüldü, ana başlıkla aynı boy oldu */
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .header-logo {
+            width: 35px;  /* 38px'den 35px'e düşürüldü */
+            height: 35px; /* 40px'den 35px'e düşürüldü */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* --- ORTA İÇERİK ALANI (Kaydırılabilir) --- */
+        .main-content {
+            flex: 1;
+            padding: 25px 20px 80px; 
+            overflow-y: auto;
+            display: block; /* Flex yerine block yapıyoruz ki rahatça kayabilsin */
+        }
+
+        /* --- AKTİF GÖREV KART (Motivasyon Kartı Stili) --- */
+        .active-task-card {
+            background: linear-gradient(135deg, #5c704c, #768a4c);
+            color: white;
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 6px 20px rgba(92, 112, 76, 0.25);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px; /* Eski görevler listesiyle arasına nefes aldıracak boşluk */
+        }
+        .task-badge {
+            display: inline-block;
+            background-color: #f4cc3a;
+            color: #333;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .active-task-card h3 { font-size: 20px; margin-bottom: 8px; font-weight: 700; }
+        .active-task-card p { font-size: 13px; opacity: 0.95; margin-bottom: 20px; line-height: 1.5; }
+        
+        /* Fotoğraf Yükleme / Kamera Butonu */
+        .camera-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background-color: #b8bc73;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .camera-btn:active { transform: scale(0.96); }
+        .camera-btn span { font-size: 20px; margin-right: 8px; }
+
+        /* --- BİLGİ KUTUCUĞU --- */
+        .info-box {
+            background-color: rgba(92, 112, 76, 0.08); /* Çok hafif zeytin yeşili şeffaf zemin */
+            border-left: 4px solid #5c704c;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
+        }
+        .info-icon {
+            font-size: 22px;
+            margin-top: 2px;
+        }
+        .info-box-text p {
+            font-size: 12px;
+            color: #444;
+            line-height: 1.5;
+        }
+        .info-box-text strong {
+            display: block;
+            color: #5c704c;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        /* --- GEÇMİŞ GÖREVLER (Grid Yapısı) --- */
+        .section-title {
+            color: #5c704c;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px; /* Grid ile arasındaki boşluğu 5px'ten 15px'e çıkardık */
+            width: 100%;
+            text-align: left;
+            padding-left: 5px;
+        }
+        .past-tasks-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+        .past-task-item {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            border: 1px solid #f0e9df;
+            text-align: center;
+        }
+        .past-task-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background-color: #eee;
+        }
+        .past-task-item h4 { font-size: 12px; color: #333; margin-bottom: 4px; font-weight: 600; }
+        .past-task-item span { font-size: 11px; color: #5c704c; font-weight: 700; }
+
+        /* --- ALT NAVİGASYON MENÜSÜ --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #29432f;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 30;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .nav-link img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link.active img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+       /* Ortadaki Yeşil Yuvarlak (Ana Sayfa) Butonu */
+        .center-nav-btn {
+            position: relative;
+            top: -25px;
+            width: 90px;
+            height: 90px;
+            background-color: #5c704c;
+            border: 5px solid #f8f5ee;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            z-index: 40;
+        }
+
+        .center-nav-btn:active {
+            transform: scale(0.92);
+        }
+
+        .center-nav-btn img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- YENİ ÜST BİLGİ (Merdiven sayfasından) -->
+        <header class="top-header">
+            <a href="anasayfa.html" class="back-btn">←</a>
+            <h1 class="header-title">Görev Merkezi</h1>
+            <div class="header-logo">
+                <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:24px\'>🌿</span>'">
+            </div>
+        </header>
+
+        <!-- ORTA İÇERİK ALANI (Kaydırılabilir) -->
+        <main class="main-content">
+            
+            <!-- AKTİF GÖREV KART (Gradyan Tasarımlı) -->
+            <div class="active-task-card">
+                <div class="task-badge" id="active-task-points">50 YP</div>
+                <h3 id="active-task-title">Görev Yükleniyor...</h3>
+                <p id="active-task-desc">Lütfen bekleyin, bu haftanın görevi Firebase'den çekiliyor.</p>
+                
+                <!-- Gizli dosya seçici -->
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+                
+                <button class="camera-btn" onclick="document.getElementById('cameraInput').click()">
+                    <span>📸</span> Görevi Tamamla
+                </button>
+            </div>
+
+            
+            <!-- YENİ EKLENEN BİLGİ KUTUCUĞU -->
+            <div class="info-box">
+                <span class="info-icon">💡</span>
+                <div class="info-box-text">
+                    <strong>Bunun Ne Olduğunu Merak Ediyor Musun?</strong>
+                    <p>Her hafta yenilenen challenges'ın bir parçası olarak burada senden kampüste saklı bazı ekolojik değerlerini bulmanı isteyeceğiz. Bunu ilk bulan sen olursan 50 YP, ilk olamazsan 10 YP kazanabilirsin! Unutma: Yüklediğin fotoğraf hafta içinde kontrol edilecek ve eğer görevle alakası olmayan bir fotoğrafsa senden puan kesilebilir ya da hesabın dondurulabilir. </p>
+                </div>
+            </div>
+
+            <!-- TAMAMLANAN GÖREVLER (GRID) -->
+            <h3 class="section-title">Tamamladığım Görevler</h3>
+            
+
+            <div class="past-tasks-grid" id="past-tasks-container">
+                <!-- Öğrenci başlangıçta hiç görev yapmadığı için burası boş görünecek -->
+                <p id="no-task-msg" style="grid-column: span 2; text-align: center; font-size: 13px; color: #666; padding: 20px 0;">
+                    Henüz tamamlanmış bir göreviniz bulunmuyor. İlk görevini tamamlamak için yukarıdaki kamerayı kullan! 🌱
+                </p>
+            </div>
+
+        </main>
+
+        <!-- YENİ ALT NAVİGASYON (Merdiven sayfasından) -->
+        <nav class="bottom-nav">
+            <a href="chat.html" class="nav-link">
+                <img src="images/chat menu.png" alt="Chat" onerror="this.outerHTML='<span style=\'font-size:22px\'>💬</span>'">
+            </a>
+            <a href="skor.html" class="nav-link">
+                <img src="images/skor tablosu menu.png" alt="Skor Tablosu" onerror="this.outerHTML='<span style=\'font-size:22px\'>🏆</span>'">
+            </a>
+            <a href="anasayfa.html" class="center-nav-btn">
+                <img src="images/ana menu.png" alt="Ana Sayfa" onerror="this.outerHTML='<span style=\'font-size:32px\'>🏠</span>'">
+            </a>
+            <a href="quiz.html" class="nav-link">
+                <img src="images/quic menu.png" alt="Quiz" onerror="this.outerHTML='<span style=\'font-size:22px\'>❓</span>'">
+            </a>
+            <a href="profil.html" class="nav-link">
+                <img src="images/profil menu.png" alt="Profil" onerror="this.outerHTML='<span style=\'font-size:22px\'>👤</span>'">
+            </a>
+        </nav>
+
+    </div>
+
+    <!-- Firebase bağlantıları için JS dosyası -->
+    <script type="module" src="gorevler.js"></script>
+</body>
+</html>

@@ -24,7 +24,8 @@
         /* =========================================
            2. ORTA ALAN VE KARTLAR
            ========================================= */
-        .main-content { flex: 1; padding: 20px 20px 110px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }        .daily-question-card { background-color: #ffffff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e6cda3; }
+        .main-content { flex: 1; padding: 20px 20px 110px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        .daily-question-card { background-color: #ffffff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e6cda3; }
         .card-badge { background-color: #f4cc3a; color: #333; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 12px; }
         .question-text { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 15px; line-height: 1.4; }
         .options-list { display: flex; flex-direction: column; gap: 10px; }
@@ -35,7 +36,15 @@
         .feedback-text { margin-top: 15px; font-size: 12px; color: #5c704c; font-weight: 500; display: none; background-color: rgba(92, 112, 76, 0.1); padding: 10px; border-radius: 8px; border-left: 3px solid #5c704c; }
         
         /* =========================================
-           3. MİNİ QUİZ VE ALT MENÜ
+           3. GÜNÜN SORUSU BAŞLATICI VE UYARI STİLİ
+           ========================================= */
+        .daily-starter-box { text-align: center; padding: 5px 0; }
+        .daily-starter-box h3 { font-size: 18px; color: #5c704c; margin-bottom: 8px; font-weight: 700; }
+        .warning-box { background-color: #fff8e6; border: 1px dashed #f4cc3a; border-left: 4px solid #e6a800; color: #664d03; padding: 12px; border-radius: 12px; font-size: 12px; line-height: 1.45; margin-bottom: 16px; text-align: left; }
+        .locked-box { background-color: #fff3f3; border: 1px solid #ffcdd2; color: #c62828; padding: 16px; border-radius: 14px; font-size: 13px; line-height: 1.5; text-align: center; font-weight: 600; }
+
+        /* =========================================
+           4. MİNİ QUİZ VE ALT MENÜ
            ========================================= */
         .mini-quiz-card { background: linear-gradient(135deg, #5c704c, #768a4c); border-radius: 20px; padding: 20px; color: white; text-align: center; box-shadow: 0 6px 15px rgba(92, 112, 76, 0.3); }
         .mini-quiz-card h3 { font-size: 18px; margin-bottom: 8px; }
@@ -103,25 +112,86 @@
     </div>
 
     <script>
-        // --- SİHİRLİ DEDEKTİF HATA GÖSTERİCİ ---
         function ekranaHataBas(mesaj) {
             document.getElementById('hataKutusu').style.display = 'block';
             document.getElementById('hataMesaji').innerHTML = mesaj;
             document.getElementById('dailyQuestionCard').style.display = 'none';
         }
 
-        // 🌟 HATAYI ÇÖZEN KISIM: Bütün değişkenleri sadece 1 kere en başta tanımlıyoruz!
         let gununSorulari = [];
         let quizSorulari = [];
         let currentQuizIndex = 0;
         let dogruSayisi = 0; 
         let quizGecmisi = []; 
+        let gununSorusuAktifMi = false; // Soru şu an ekranda açık ve cevap bekliyor mu?
 
-        // --- 1. GÜNÜN SORUSU BAĞLANTISI ---
-        function gununSorusunuEkranaBas() {
+        // Bugünün tarihini standart formatta alalım
+        function bugununTarihi() {
+            return new Date().toLocaleDateString('tr-TR');
+        }
+
+        // --- 1. GÜNÜN SORUSU KONTROL VE BAŞLANGIÇ EKRANI ---
+        function gununSorusunuHazirla() {
+            if (gununSorulari.length === 0) return;
+
+            const dailyCard = document.getElementById('dailyQuestionCard');
+            const todayStr = bugununTarihi();
+            const kayitliTarih = localStorage.getItem('dailyQuestionDate');
+            const kayitliDurum = localStorage.getItem('dailyQuestionStatus'); 
+            // Durumlar: 'answered' (cevaplandı), 'forfeited' (uygulama değiştirdi/hakkı yandı), 'opened' (açtı ama cevaplamadan yeniledi/çıktı)
+
+            // Eski günden kalan kayıt varsa sıfırla
+            if (kayitliTarih !== todayStr) {
+                localStorage.removeItem('dailyQuestionStatus');
+            }
+
+            // EĞER BUGÜN ZATEN CEVAPLADIYSA:
+            if (kayitliTarih === todayStr && kayitliDurum === 'answered') {
+                dailyCard.innerHTML = `
+                    <div class="card-badge">⭐ Günün Sorusu (+50 YP)</div>
+                    <div class="locked-box" style="background-color: #eef5eb; border-color: #a4b27d; color: #5c704c;">
+                        ✅ Bugünün sorusunu zaten görüntüleyip cevapladın!<br>Yeni soru için yarına kadar bekle. ⏳
+                    </div>
+                `;
+                return;
+            }
+
+            // EĞER BUGÜN SORUYU AÇIP UYGULAMA DEĞİŞTİRDİYSE VEYA SAYFAYI KAPATTIYSA:
+            if (kayitliTarih === todayStr && (kayitliDurum === 'forfeited' || kayitliDurum === 'opened')) {
+                dailyCard.innerHTML = `
+                    <div class="card-badge">⭐ Günün Sorusu (+50 YP)</div>
+                    <div class="locked-box">
+                        🚫 Günün sorusunu daha önce açtığın ve tamamlamadan ekrandan ayrıldığın için bugünkü cevaplama hakkını kaybettin!<br><br>Yarın yeni soruda görüşmek üzere. 🌱
+                    </div>
+                `;
+                return;
+            }
+
+            // HENÜZ HİÇ AÇMADIYSA -> UYARI KUTUSU VE "GÜNÜN SORUSUNU GÖSTER" BUTONU GELİR:
+            dailyCard.innerHTML = `
+                <div class="daily-starter-box">
+                    <div class="card-badge">⭐ Günün Sorusu (+50 YP)</div>
+                    <h3>Günün Sorusuna Hazır Mısın?</h3>
+                    <div class="warning-box">
+                        <b>⚠️ Önemli Uyarı:</b> Günün sorusunu <b>sadece bir kere</b> görüntüleyip cevaplayabilirsiniz. Soruyu açtıktan sonra başka bir uygulamaya geçerseniz, sekme değiştirirseniz veya sayfadan çıkarsanız cevap verme hakkınızı kaybedersiniz!
+                    </div>
+                    <button class="start-quiz-btn" style="width: 100%;" onclick="gununSorusunuGoster()">Günün Sorusunu Göster ⭐</button>
+                </div>
+            `;
+        }
+
+        // --- BUTONA BASILINCA SORUYU AÇMA ---
+        function gununSorusunuGoster() {
             if (gununSorulari.length === 0) return;
 
             const bugun = new Date();
+            const todayStr = bugununTarihi();
+
+            // Soruyu açtığı an hakkını kullandığını kaydet (Sayfayı yenilerse tekrar açamasın)
+            localStorage.setItem('dailyQuestionDate', todayStr);
+            localStorage.setItem('dailyQuestionStatus', 'opened');
+            gununSorusuAktifMi = true;
+
             const gunIndex = Math.floor((bugun - new Date(bugun.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
             const secilenIndex = gunIndex % gununSorulari.length; 
             
@@ -136,33 +206,65 @@
 
             dailyCard.innerHTML = `
                 <div class="card-badge">⭐ Günün Sorusu (+50 YP)</div>
+                <div style="font-size: 11px; color: #d9534f; font-weight: 600; margin-bottom: 10px;">
+                    🔒 Ekrandan ayrılırsan cevap hakkın iptal olur!
+                </div>
                 <div class="question-text">${soruVerisi.soru}</div>
                 
-                <div class="options-list">
+                <div class="options-list" id="dailyOptionsList">
                     <button class="option-btn" onclick="answerDaily(this, ${isACorrect}, '${aciklamaTemiz}')">A) ${soruVerisi.A}</button>
                     <button class="option-btn" onclick="answerDaily(this, ${isBCorrect}, '${aciklamaTemiz}')">B) ${soruVerisi.B}</button>
                     <button class="option-btn" onclick="answerDaily(this, ${isCCorrect}, '${aciklamaTemiz}')">C) ${soruVerisi.C}</button>
                 </div>
                 <div class="feedback-text" id="dailyFeedback"></div>
             `;
-            
-            const todayStr = bugun.toLocaleDateString('tr-TR');
-            if (localStorage.getItem('quizLastAnsweredDate') === todayStr) {
-                // Puanı anında buluta fırlatır!
-                if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
-                const optionsBox = dailyCard.querySelector('.options-list');
-                const feedbackBox = dailyCard.querySelector('#dailyFeedback');
-                if(optionsBox && feedbackBox) {
-                    optionsBox.style.opacity = "0.6";
-                    optionsBox.style.pointerEvents = "none";
-                    feedbackBox.style.display = "block";
-                    feedbackBox.innerHTML = "<b>Bugünün sorusunu zaten cevapladın! Yarına kadar bekle. ⏳</b>";
-                }
+        }
+
+        // --- UYGULAMA / SEKME DEĞİŞTİRME YAKALAYICI ---
+        function hakkiIptalEt() {
+            if (!gununSorusuAktifMi) return;
+
+            gununSorusuAktifMi = false;
+            localStorage.setItem('dailyQuestionDate', bugununTarihi());
+            localStorage.setItem('dailyQuestionStatus', 'forfeited');
+
+            const dailyCard = document.getElementById('dailyQuestionCard');
+            if (dailyCard) {
+                dailyCard.innerHTML = `
+                    <div class="card-badge">⭐ Günün Sorusu (+50 YP)</div>
+                    <div class="locked-box">
+                        🚫 <b>Cevap Hakkın İptal Edildi!</b><br>
+                        Soruyu görüntüledikten sonra uygulama veya sekme değiştirdiğin için bugünün sorusunu cevaplama hakkını kaybettin.
+                    </div>
+                `;
             }
         }
 
+        // Kullanıcı sekme değiştirirse veya uygulamayı arka plana atarsa:
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && gununSorusuAktifMi) {
+                hakkiIptalEt();
+            }
+        });
+
+        // Kullanıcı başka bir pencereye tıklarsa veya telefon ekranında başka bir uygulama açarsa:
+        window.addEventListener("blur", () => {
+            if (gununSorusuAktifMi) {
+                hakkiIptalEt();
+            }
+        });
+
+        // --- GÜNÜN SORUSUNU CEVAPLAMA ---
         function answerDaily(btn, isCorrect, aciklama) {
-            if(document.getElementById('dailyFeedback').style.display === 'block') return;
+            if (!gununSorusuAktifMi) return;
+            if (document.getElementById('dailyFeedback').style.display === 'block') return;
+
+            // Cevap verildiği an aktif korumayı kapat ve durumu 'answered' olarak kaydet
+            gununSorusuAktifMi = false;
+            const todayStr = bugununTarihi();
+            localStorage.setItem('dailyQuestionDate', todayStr);
+            localStorage.setItem('dailyQuestionStatus', 'answered');
+            localStorage.setItem('quizLastAnsweredDate', todayStr);
 
             const buttons = btn.parentElement.querySelectorAll('.option-btn');
             buttons.forEach(b => b.style.pointerEvents = 'none');
@@ -175,22 +277,19 @@
                 feedback.innerHTML = `<b>Tebrikler! Doğru Cevap. 🎉</b><br>${aciklama}<br><br><i>(+50 YP Kazandın)</i>`;
                 
                 let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
-                let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0"); // Eksikti, düzeltildi!
+                let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0");
                 localStorage.setItem("currentPoints", currentPoints + 50);
-                localStorage.setItem("totalEarned", totalEarned + 50); // Eksikti, düzeltildi!
-                localStorage.setItem('quizLastAnsweredDate', new Date().toLocaleDateString('tr-TR'));
+                localStorage.setItem("totalEarned", totalEarned + 50);
 
-                // 🌟 GEÇMİŞ LİSTESİNE EKLEME
                 let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
                 aktiviteGecmisi.push({ eylem: "Günün Sorusu Doğru Bilindi ⭐", puan: 50 });
-                if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
+                if (aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
                 localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
 
-                if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
-
+                if (window.bulutaPuanKaydet) window.bulutaPuanKaydet();
             } else {
                 btn.classList.add('wrong');
-                feedback.innerHTML = `<b>Maalesef yanlış Cevap. 😔</b><br>${aciklama}`;
+                feedback.innerHTML = `<b>Maalesef yanlış cevap. 😔</b><br>${aciklama}`;
                 feedback.style.color = "#d9534f";
                 feedback.style.borderLeftColor = "#d9534f";
                 feedback.style.backgroundColor = "rgba(217, 83, 79, 0.1)";
@@ -199,11 +298,16 @@
 
         // --- 2. MİNİ QUİZ BAĞLANTISI VE ÖZET EKRANI ---
         function startMiniQuiz() {
+            // Eğer günün sorusu açıkken mini quize basarsa önce uyarı verelim
+            if (gununSorusuAktifMi) {
+                alert("Önce ekrandaki Günün Sorusunu cevaplamalısın bebeğim!");
+                return;
+            }
+
             document.getElementById('dailyQuestionCard').style.display = 'none'; 
             document.getElementById('quizStarterCard').style.display = 'none'; 
             document.getElementById('activeQuizArea').style.display = 'block'; 
             
-            // Değişkenleri sıfırla (Her yeni quizde temiz başlasın)
             currentQuizIndex = 0;
             dogruSayisi = 0;
             quizGecmisi = [];
@@ -217,7 +321,7 @@
 
         function soruyuEkranaBas(index) {
             if (index >= quizSorulari.length) {
-                quiziBitirVeOzetle(); // 10 Soru bitince sihirli özet ekranını çağırır! ✨
+                quiziBitirVeOzetle();
                 return;
             }
 
@@ -247,7 +351,7 @@
         }
 
         function answerQuiz(btn, isCorrect, aciklama) {
-            if(document.getElementById('quizFeedback').style.display === 'block') return;
+            if (document.getElementById('quizFeedback').style.display === 'block') return;
             const buttons = btn.parentElement.querySelectorAll('.option-btn');
             buttons.forEach(b => b.style.pointerEvents = 'none');
 
@@ -255,7 +359,6 @@
             feedback.style.display = 'block';
             document.getElementById('nextQuestionBtn').style.display = 'block'; 
 
-            // 🌟 SİHİR BURADA: Doğruları say ve geçmişi kaydet!
             if (isCorrect) dogruSayisi++;
             quizGecmisi.push({
                 soru: quizSorulari[currentQuizIndex].soru,
@@ -283,7 +386,6 @@
             soruyuEkranaBas(currentQuizIndex);
         }
 
-        // --- 🌟 KUSURSUZ ÖZET VE ÖDÜL EKRANI ---
         function quiziBitirVeOzetle() {
             const activeArea = document.getElementById('activeQuizArea');
             const kazanilanPuan = dogruSayisi * 5; 
@@ -293,15 +395,14 @@
             localStorage.setItem("currentPoints", currentPoints + kazanilanPuan);
             localStorage.setItem("totalEarned", totalEarned + kazanilanPuan);
             
-            // 🌟 GEÇMİŞ LİSTESİNE EKLEME
             if (kazanilanPuan > 0) {
                 let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
                 aktiviteGecmisi.push({ eylem: `Mini Quiz Tamamlandı 🧠`, puan: kazanilanPuan });
-                if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
+                if (aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
                 localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
             }
 
-            if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
+            if (window.bulutaPuanKaydet) window.bulutaPuanKaydet();
 
             let ozetHTML = `
                 <div class="daily-question-card" style="text-align: center; border: 2px solid #5c704c; padding: 25px 20px;">
@@ -344,8 +445,7 @@
             activeArea.innerHTML = ozetHTML;
         }
 
-          
-        // --- 3. YENİ NESİL KUSURSUZ CSV PARÇALAYICI ---
+        // --- 3. CSV PARÇALAYICI ---
         function csvParcala(metin) {
             if (!metin || metin.trim() === "") return [];
 
@@ -424,7 +524,7 @@
             }
         }
 
-        // --- 4. AKILLI VERİ ÇEKME YÖNETİCİSİ ---
+        // --- 4. VERİ ÇEKME YÖNETİCİSİ ---
         async function sorulariGetir() {
             if (window.location.protocol === 'file:') {
                 ekranaHataBas("Ah bebeğim, dosyayı klasörden çift tıklayarak (file:///) açmışsın! Lütfen VS Code'da sağ tıklayıp 'Open with Live Server' diyerek aç! 🥺");
@@ -432,26 +532,23 @@
             }
 
             try {
-                // Günün Sorusu
                 const gununYaniti = await fetch('günün sorulari.csv');
                 if (!gununYaniti.ok) throw new Error("<b>günün sorulari.csv</b> dosyası klasörde bulunamadı!");
                 const gununVerisi = await gununYaniti.text();
                 gununSorulari = csvParcala(gununVerisi);
                 
                 if (gununSorulari.length > 0) {
-                    gununSorusunuEkranaBas(); 
+                    gununSorusunuHazirla(); 
                 } else {
                     throw new Error("Günün soruları dosyanı okudum ama içi boş veya şablonu bozuk görünüyor.");
                 }
 
-                // Mini Quiz
                 const quizYaniti = await fetch('quiz sorulari.csv'); 
                 if (!quizYaniti.ok) throw new Error("<b>quiz sorulari.csv</b> dosyası klasörde bulunamadı!");
                 const quizVerisi = await quizYaniti.text();
                 
                 let tumSorular = csvParcala(quizVerisi);
 
-                // 🌟 SİHİRLİ FİLTRE 1: Excel'de kazara aynı soru iki kere yazıldıysa, birini sil (Tekilleştirme)
                 let benzersizSorular = [];
                 let soruMetinleri = new Set();
                 for (let soru of tumSorular) {
@@ -461,13 +558,11 @@
                     }
                 }
                 
-                // 🌟 SİHİRLİ FİLTRE 2: Kusursuz Karıştırma (Fisher-Yates Algoritması)
                 for (let i = benzersizSorular.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [benzersizSorular[i], benzersizSorular[j]] = [benzersizSorular[j], benzersizSorular[i]];
                 }
                 
-                // Tamamen benzersiz ve kusursuz karışmış havuzdan ilk 10 tanesini al
                 quizSorulari = benzersizSorular.slice(0, 10);
                 
             } catch (hata) {
@@ -479,43 +574,11 @@
         document.addEventListener("DOMContentLoaded", () => {
             sorulariGetir();
         });
-    
-        const firebaseConfig = {
-            apiKey: "AIzaSyBIrgMhqEE-4Qe3m8dlxSqA5J9GoXR-JTA",
-            authDomain: "yesilkampus-iuc.firebaseapp.com",
-            projectId: "yesilkampus-iuc",
-            storageBucket: "yesilkampus-iuc.firebasestorage.app",
-            messagingSenderId: "555123910788",
-            appId: "1:555123910788:web:2965b070f132129e853ad1"
-        };
-
-        let app;
-        try { app = initializeApp(firebaseConfig); } 
-        catch (e) { app = getApp(); }
-        const db = getFirestore(app);
-        
-        const activeUser = localStorage.getItem("kampusUser") || "DemoKullanici";
-
-        // Diğer kodlardan çağrılabilmesi için window objesine ekliyoruz
-        window.bulutaPuanKaydet = async function() {
-            let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
-            let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
-            
-            try {
-                await setDoc(doc(db, "users", activeUser), {
-                    currentPoints: currentPoints,
-                    totalEarned: totalEarned
-                }, { merge: true }); // Eski verileri ezmez, sadece puanı günceller
-                console.log("Puanlar başarıyla buluta mühürlendi! ☁️🌿");
-            } catch (e) {
-                console.error("Buluta kaydedilirken hata oluştu: ", e);
-            }
-        };
     </script>
 
-        <!-- ☁️ FİREBASE BULUT KAYIT MOTORU -->
+    <!-- ☁️ FİREBASE BULUT KAYIT MOTORU -->
     <script type="module">
-        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -527,17 +590,13 @@
             appId: "1:555123910788:web:2965b070f132129e853ad1"
         };
 
-        let app;
-        try { app = initializeApp(firebaseConfig); } 
-        catch (e) { app = getApp(); }
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
         const db = getFirestore(app);
         
         window.bulutaPuanKaydet = async function() {
             const activeUser = localStorage.getItem("kampusUser") || "DemoKullanici";
             let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
             let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
-            
-            // 🌟 YENİ SİHİR BURADA: Geçmişi de buluta alıyoruz!
             let aktiviteGecmisi = JSON.parse(localStorage.getItem('aktiviteGecmisi')) || []; 
             
             try {
@@ -552,7 +611,6 @@
             }
         };
     </script>
-
 
 </body>
 </html>

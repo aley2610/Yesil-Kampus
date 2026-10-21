@@ -28,10 +28,22 @@
         /* =========================================
            3. ODAK İÇERİĞİ VE ANİMASYONLAR
            ========================================= */
-        .main-content { flex: 1; padding: 30px 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 15px; }
+        .main-content { flex: 1; padding: 25px 20px 95px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
         
-        .timer-display { font-size: 55px; font-weight: 700; color: #333; letter-spacing: 2px; font-family: monospace; }
+        .timer-display { font-size: 52px; font-weight: 700; color: #333; letter-spacing: 2px; font-family: monospace; line-height: 1.1; }
         
+        /* Canlı Kazanım Rozeti */
+        .live-reward-badge {
+            background-color: #eef5eb;
+            border: 1px solid #a4b27d;
+            color: #5c704c;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 14px;
+            transition: all 0.2s ease;
+        }
+
         /* Doğanın Nefes Alışını Simgeleyen Efekt */
         @keyframes breathe {
             0% { transform: scale(1); box-shadow: 0 0 0 rgba(92, 112, 76, 0.4); }
@@ -40,10 +52,10 @@
         }
         .breathing-animation { animation: breathe 3.5s infinite ease-in-out; border-radius: 50%; }
 
-        .action-button { width: 100%; background-color: #b8bc73; color: white; border: none; padding: 16px; border-radius: 18px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .action-button.danger { background-color: #d9534f; }
+        .action-button { width: 100%; background-color: #b8bc73; color: white; border: none; padding: 15px; border-radius: 18px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .action-button.complete { background-color: #5c704c; }
         
-        .info-text-box { background-color: #ffffff; border-radius: 16px; padding: 15px; border-left: 4px solid #5c704c; font-size: 12px; color: #666; line-height: 1.5; box-shadow: 0 3px 10px rgba(0,0,0,0.03); margin-top: auto; margin-bottom: 70px; }
+        .info-text-box { background-color: #ffffff; border-radius: 16px; padding: 14px; border-left: 4px solid #5c704c; font-size: 11.5px; color: #666; line-height: 1.5; box-shadow: 0 3px 10px rgba(0,0,0,0.03); margin-top: auto; }
 
         /* =========================================
            4. ALT NAVİGASYON
@@ -62,7 +74,8 @@
         <div id="oledKalkan" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: #333; cursor: pointer;">
             <span style="font-size: 60px; margin-bottom: 20px; opacity: 0.8;">🌙</span>
             <p style="font-size: 16px; font-weight: bold; color: #555;">Yeşil Odak Aktif</p>
-            <p style="font-size: 12px; margin-top: 10px; color: #333;">Uyandırmak için ekrana çift dokun</p>
+            <p id="oledZaman" style="font-size: 28px; font-weight: 700; color: #5c704c; font-family: monospace; margin-top: 8px;">00:00</p>
+            <p style="font-size: 12px; margin-top: 12px; color: #333;">Uyandırmak için ekrana çift dokun</p>
         </div>
 
         <header class="top-header">
@@ -74,21 +87,27 @@
         </header>
 
         <main class="main-content">
-            <h2 style="color: #5c704c; font-size: 18px;">60 Dakikalık Dijital Detoks</h2>
+            <h2 style="color: #5c704c; font-size: 18px;">Dijital Detoks Sayacı</h2>
             
-            <div id="zamanGostergesi" class="timer-display">60:00</div>
+            <!-- 00:00'dan İleri Sayan Kronometre -->
+            <div id="zamanGostergesi" class="timer-display">00:00</div>
 
-            <img src="images/yeşil odak.png" alt="Odak" id="odakResmi" style="width: 140px; margin: 10px 0; transition: transform 0.3s;" onerror="this.outerHTML='<span style=\'font-size:80px\'>⏳</span>'">
+            <!-- Canlı Biriken Puan ve Karbon Tasarrufu Göstergesi -->
+            <div id="canliKazanim" class="live-reward-badge">
+                🌱 Biriken: +0 YP • 0.0 g CO₂ Tasarrufu
+            </div>
+
+            <img src="images/yeşil odak.png" alt="Odak" id="odakResmi" style="width: 130px; margin: 6px 0; transition: transform 0.3s;" onerror="this.outerHTML='<span style=\'font-size:80px\'>⏳</span>'">
             
-            <p style="color: #5c704c; font-size: 12px; font-weight: 600; padding: 0 10px;">
-                Fiziksel kilit tuşuna basmak veya başka uygulamaya geçmek odağı bozar! Şarjını korumak için <b>Ekranı Karart</b> modunu kullan.
+            <p style="color: #5c704c; font-size: 11.5px; font-weight: 600; padding: 0 10px;">
+                Sayacı başlattıktan sonra başka uygulamaya geçmek odağı bozar! Şarjını korumak için <b>Ekranı Karart</b> modunu kullanabilirsin.
             </p>
 
-            <button id="baslatBtn" class="action-button">Yeşil Odak'ı Başlat</button>
+            <button id="baslatBtn" class="action-button">Yeşil Odak'ı Başlat ▶️</button>
             <button id="karartBtn" class="action-button" style="background-color: #1a252f; display: none;">🌙 Ekranı Karart (Pil Tasarrufu)</button>
 
             <div class="info-text-box">
-                🌱 Odaklandığın süre boyunca cihazının 0.025 kWh enerji tasarrufu yapmasını sağlar ve 11 g CO2 tasarrufu sağlarsın. 11 g CO2 tasarrufu sağladığın için 11 Yeşil Puan ve 39 Çaba Puanı kazanırsın.
+                🌱 60 dakikalık odaklanma boyunca cihazının 0.025 kWh enerji tasarrufu yapmasını ve 11 g CO₂ azaltımı sağlarsın (60 dk = 50 YP). İleri sayım sayesinde dilediğin kadar odaklanıp biriken puanını alabilirsin!
             </div>
         </main>
 
@@ -101,71 +120,102 @@
         </nav>
     </div>
 
-    <!-- 🧠 YEŞİL ODAK MOTORU VE GÜVENLİK SİSTEMİ -->
+    <!-- 🧠 YEŞİL ODAK İLERİ SAYIM MOTORU VE GÜVENLİK SİSTEMİ -->
     <script>
         let odakAktif = false;
-        
-        // 🌟 JÜRİ İÇİN TEST NOTU: Sunumda 60 dakika bekleyemeyeceğin için burayı "3600" yerine "10" saniye yaparak jüriye hızlıca gösterebilirsin aşkım!
-        let kalanSaniye = 3600; 
+        let gecenSaniye = 0; // 0'dan ileriye doğru sayar!
         let timerInterval = null;
+
+        // 🌟 JÜRİ VE TEST NOTU: Puan kazanmak için gereken minimum süre (60 saniye = 1 dakika).
+        // Sunumda hızlıca göstermek istersen buradaki 60'ı 5 yapabilirsin aşkm!
+        const MINIMUM_ODAK_SANIYE = 60;
 
         const baslatBtn = document.getElementById("baslatBtn");
         const karartBtn = document.getElementById("karartBtn");
         const odakResmi = document.getElementById("odakResmi");
         const oledKalkan = document.getElementById("oledKalkan");
+        const oledZaman = document.getElementById("oledZaman");
         const zamanGostergesi = document.getElementById("zamanGostergesi");
+        const canliKazanim = document.getElementById("canliKazanim");
 
         function formatZaman(saniye) {
-            let dk = Math.floor(saniye / 60);
+            let saat = Math.floor(saniye / 3600);
+            let dk = Math.floor((saniye % 3600) / 60);
             let sn = saniye % 60;
-            return (dk < 10 ? "0" + dk : dk) + ":" + (sn < 10 ? "0" + sn : sn);
+            let dkStr = dk < 10 ? "0" + dk : dk;
+            let snStr = sn < 10 ? "0" + sn : sn;
+            return saat > 0 ? `${saat}:${dkStr}:${snStr}` : `${dkStr}:${snStr}`;
+        }
+
+        // Geçen saniyeye göre kazanılan puanı hesapla (60 dk = 50 YP oranıyla)
+        function hesaplaPuan(saniye) {
+            if (saniye < MINIMUM_ODAK_SANIYE) return 0;
+            // Her 1 dakika için yaklaşık 0.833 YP (60 dakikada tam 50 YP, en az 1 YP)
+            return Math.max(1, Math.round((saniye / 3600) * 50));
+        }
+
+        // Geçen saniyeye göre engellenen CO2 miktarını hesapla (60 dk = 11g CO2)
+        function hesaplaCO2(saniye) {
+            return ((saniye / 3600) * 11).toFixed(1);
         }
 
         baslatBtn.addEventListener("click", () => {
             if (!odakAktif) {
-                // ODAĞI BAŞLAT
+                // ODAĞI BAŞLAT (İLERİ SAYIM)
                 odakAktif = true;
-                odakResmi.classList.add("breathing-animation"); // Nefes alma efekti başlar
-                baslatBtn.textContent = "Pes Et (Odağı Boz)";
-                baslatBtn.classList.add("danger");
+                gecenSaniye = 0;
+                odakResmi.classList.add("breathing-animation");
+                baslatBtn.textContent = "Odağı Tamamla & Puanı Al ✅";
+                baslatBtn.classList.add("complete");
                 karartBtn.style.display = "block";
 
-                // Geri Sayım Motoru
+                // İleri Sayım Motoru
                 timerInterval = setInterval(() => {
-                    kalanSaniye--;
-                    zamanGostergesi.innerText = formatZaman(kalanSaniye);
+                    gecenSaniye++;
+                    const formatli = formatZaman(gecenSaniye);
+                    zamanGostergesi.innerText = formatli;
+                    if (oledZaman) oledZaman.innerText = formatli;
 
-                    if (kalanSaniye <= 0) {
-                        odagiBasariylaBitir();
-                    }
+                    const anlikPuan = hesaplaPuan(gecenSaniye);
+                    const anlikCO2 = hesaplaCO2(gecenSaniye);
+                    canliKazanim.innerHTML = `🌱 Biriken: <b>+${anlikPuan} YP</b> • ${anlikCO2} g CO₂ Tasarrufu`;
                 }, 1000);
             } else {
-                // PES ET BUTONUNA BASILDI
-                if(confirm("Odaklanmayı bitirmek istediğine emin misin? Puan kazanamayacaksın.")) {
-                    odagiBoz("Odaklanmayı kendin sonlandırdın.");
+                // KULLANICI ODAĞI BİTİRMEK İSTEDİ
+                if (gecenSaniye < MINIMUM_ODAK_SANIYE) {
+                    // Henüz minimum süreyi doldurmadıysa uyar
+                    if (confirm(`Puan kazanmak için en az ${MINIMUM_ODAK_SANIYE} saniye odaklanmalısın. Şimdi çıkarsan puan kazanamayacaksın, emin misin?`)) {
+                        odagiBoz("Odaklanma erken sonlandırıldığı için puan kazanılamadı.");
+                    }
+                } else {
+                    odagiBasariylaBitir();
                 }
             }
         });
 
-        // 🎉 SÜRE BİTTİĞİNDE ÖDÜL VEREN FONKSİYON
+        // 🎉 ODAK TAMAMLANDIĞINDA ÖDÜL VEREN FONKSİYON
         function odagiBasariylaBitir() {
             clearInterval(timerInterval);
             odakAktif = false;
+
+            const kazanilanPuan = hesaplaPuan(gecenSaniye);
+            const kazanilanCO2 = hesaplaCO2(gecenSaniye);
+            const gecenDakika = Math.max(1, Math.round(gecenSaniye / 60));
             
-            alert("Harika! 1 Saatlik dijital detoksu tamamladın! Doğaya nefes oldun ve +50 YP kazandın! 🌿💚");
+            alert(`Harika! ${formatZaman(gecenSaniye)} boyunca dijital detoks yaptın!\nDoğaya ${kazanilanCO2} g CO₂ nefes oldun ve +${kazanilanPuan} YP kazandın! 🌿💚`);
 
             let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
             let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0");
-            localStorage.setItem("currentPoints", currentPoints + 50);
-            localStorage.setItem("totalEarned", totalEarned + 50);
+            localStorage.setItem("currentPoints", currentPoints + kazanilanPuan);
+            localStorage.setItem("totalEarned", totalEarned + kazanilanPuan);
 
             // 🌟 GEÇMİŞ LİSTESİNE EKLEME
             let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
-            aktiviteGecmisi.push({ eylem: "Yeşil Odak (Dijital Detoks) 🌙", puan: 50 });
-            if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
+            aktiviteGecmisi.push({ eylem: `Yeşil Odak (${gecenDakika} dk Dijital Detoks) 🌙`, puan: kazanilanPuan });
+            if (aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
             localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
 
-            if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
+            if (window.bulutaPuanKaydet) window.bulutaPuanKaydet();
 
             sifirlaUI();
         }
@@ -175,18 +225,18 @@
             clearInterval(timerInterval);
             odakAktif = false;
             sifirlaUI();
-            
-            // Eğer OLED ekrandayken odak bozulduysa ekranı temizlemek için mesajı biraz geciktiriyoruz
             setTimeout(() => alert(mesaj), 200); 
         }
 
         // Arayüzü İlk Haline Döndürür
         function sifirlaUI() {
-            kalanSaniye = 3600; // Sayacı sıfırla (Bunu da test için değiştirdiysen düzeltmeyi unutma)
-            zamanGostergesi.innerText = "60:00";
+            gecenSaniye = 0;
+            zamanGostergesi.innerText = "00:00";
+            if (oledZaman) oledZaman.innerText = "00:00";
+            canliKazanim.innerHTML = "🌱 Biriken: +0 YP • 0.0 g CO₂ Tasarrufu";
             odakResmi.classList.remove("breathing-animation");
-            baslatBtn.textContent = "Yeşil Odak'ı Başlat";
-            baslatBtn.classList.remove("danger");
+            baslatBtn.textContent = "Yeşil Odak'ı Başlat ▶️";
+            baslatBtn.classList.remove("complete");
             karartBtn.style.display = "none";
             oledKalkan.style.display = "none";
         }
@@ -204,13 +254,14 @@
         // 🚨 KUSURSUZ GÜVENLİK DUVARI (Uygulama arka plana atıldığında)
         document.addEventListener("visibilitychange", () => {
             if (document.hidden && odakAktif) {
-                odagiBoz("Dikkat! Başka uygulamaya geçtiğin (veya sekmeyi değiştirdiğin) için odaklanman bozuldu. Yeşil puanların yandı! 🥺");
+                odagiBoz("Dikkat! Başka uygulamaya geçtiğin (veya sekmeyi değiştirdiğin) için odaklanman bozuldu. Biriken yeşil puanların yandı! 🥺");
             }
         });
     </script>
+
     <!-- ☁️ FİREBASE BULUT KAYIT MOTORU -->
     <script type="module">
-        import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -222,17 +273,13 @@
             appId: "1:555123910788:web:2965b070f132129e853ad1"
         };
 
-        let app;
-        try { app = initializeApp(firebaseConfig); } 
-        catch (e) { app = getApp(); }
+        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
         const db = getFirestore(app);
         
         window.bulutaPuanKaydet = async function() {
             const activeUser = localStorage.getItem("kampusUser") || "DemoKullanici";
             let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
             let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
-            
-            // 🌟 YENİ SİHİR BURADA: Geçmişi de buluta alıyoruz!
             let aktiviteGecmisi = JSON.parse(localStorage.getItem('aktiviteGecmisi')) || []; 
             
             try {

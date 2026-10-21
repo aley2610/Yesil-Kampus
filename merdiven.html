@@ -46,9 +46,11 @@
         /* =========================================
            ÜST YEŞİL BAŞLIK BARI (Header)
            ========================================= */
+        /* Diğer sayfalarındaki header'ı ana sayfa ile birebir aynı boyuta getiren kodlar */
+
         .top-header {
-            background-color: #5c704c; /* Zeytin Yeşili */
-            padding: 20px 20px 25px;
+            background-color: #5c704c;
+            padding: 18px 20px 22px; /* Ana sayfadaki ile birebir aynı iç boşluk */
             border-bottom-left-radius: 28px;
             border-bottom-right-radius: 28px;
             display: flex;
@@ -57,15 +59,15 @@
             color: #ffffff;
             box-shadow: 0 4px 12px rgba(0,0,0,0.12);
             position: relative;
+            flex-shrink: 0; /* Küçülmesini veya genleşmesini engeller */
             z-index: 10;
         }
 
-        /* Geri Dön Butonu (anasayfa.html'e Yönlendirir) */
         .back-btn {
             background: rgba(255, 255, 255, 0.2);
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 38px;  /* 40px'den 38px'e düşürüldü (Ana sayfadaki menu-toggle ile aynı) */
+            height: 38px; /* 40px'den 38px'e düşürüldü */
             border-radius: 12px;
             display: flex;
             justify-content: center;
@@ -73,22 +75,20 @@
             cursor: pointer;
             text-decoration: none;
             color: white;
-            font-size: 20px;
+            font-size: 18px; /* 20px'den 18px'e düşürüldü */
             font-weight: bold;
         }
 
-        /* Sayfa Başlığı */
         .header-title {
-            font-size: 20px;
+            font-size: 18px; /* 20px'den 18px'e düşürüldü, ana başlıkla aynı boy oldu */
             font-weight: 700;
             letter-spacing: 0.5px;
             text-align: center;
         }
 
-        /* Sağ Üst Logo */
         .header-logo {
-            width: 38px;
-            height: 40px;
+            width: 35px;  /* 38px'den 35px'e düşürüldü */
+            height: 35px; /* 40px'den 35px'e düşürüldü */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -327,7 +327,7 @@
         <main class="main-content">
             
             <div class="qr-card">
-                <div class="qr-title">Adımlarını Enerjiye Dönüştür! 🪜</div>
+                <div class="qr-title">Adımlarını Enerjiye Dönüştür!</div>
                 
                 <div class="qr-image-box">
                     <img src="images/merdiven_qr.png" alt="Merdiven QR Kodu" onerror="this.outerHTML='<div style=\'width:100%; height:100%; background:#f8f5ee; display:flex; align-items:center; justify-content:center; color:#5c704c; font-size:12px; text-align:center; padding:10px; font-weight:600;\'>Merdiven QR Kodu<br>(images/merdiven_qr.png)</div>'">

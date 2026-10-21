@@ -43,7 +43,8 @@
             color: #ffffff; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.12); 
             flex-shrink: 0; 
-            z-index: 10; }
+            z-index: 10; 
+        }
 
         .back-btn { 
             background: rgba(255, 255, 255, 0.2); 
@@ -58,24 +59,28 @@
             text-decoration: none; 
             color: white; 
             font-size: 18px; 
-            font-weight: bold; }
+            font-weight: bold; 
+        }
 
         .header-title { 
             font-size: 18px; 
             font-weight: 700; 
-            letter-spacing: 0.5px; }
+            letter-spacing: 0.5px; 
+        }
 
         .header-logo { 
             width: 35px; 
             height: 35px; 
             display: flex; 
             justify-content: center; 
-            align-items: center; }
+            align-items: center; 
+        }
 
         .header-logo img { 
             width: 100%; 
             height: 100%; 
-            object-fit: contain; }
+            object-fit: contain; 
+        }
 
         /* =========================================
            4. ORTA İÇERİK ALANI
@@ -86,7 +91,8 @@
             overflow-y: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 10px; }
+            gap: 10px; 
+        }
 
         .score-title-box { 
             background-color: #ffffff; 
@@ -100,13 +106,16 @@
             color: #5c704c; 
             border: 1px solid #f0e9df; 
             box-shadow: 0 3px 10px rgba(0,0,0,0.03); 
-            margin-bottom: 4px; }
+            margin-bottom: 4px; 
+            text-align: center;
+        }
 
         .score-list { 
             width: 100%; 
             display: flex; 
             flex-direction: column; 
-            gap: 15px; }
+            gap: 15px; 
+        }
         
         .score-row { 
             background-color: #ffffff; 
@@ -119,30 +128,33 @@
             align-items: center; 
             box-sizing: border-box; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-            border: 1px solid #f0e9df; }
+            border: 1px solid #f0e9df; 
+        }
 
         .row-left { 
             display: flex; 
             align-items: center; 
-            gap: 14px; }
+            gap: 14px; 
+        }
 
         .rank-number { 
             font-size: 16px; 
             font-weight: 700; 
             color: #5c704c; 
             width: 22px; 
-            text-align: center; }
+            text-align: center; 
+        }
 
         .rank-1 { 
-            color: #d4af37; } 
+            color: #d4af37; 
+        } 
 
-        /* İsim ve meyvelerin dikeyde kusursuz hizalanması için sihirli kutu */
         .user-name {
             display: inline-flex;
-            align-items: center; /* Resim büyüse bile yazıyı hep tam ortada tutar */
-            gap: 4px; /* İsimle ve meyvelerle arasına tatlı bir boşluk koyar */
-            font-size: 13px; /* Daha önce muhtemelen 15px veya 16px'ti */
-            font-weight: 700; /* Çok kalın (bold/700) duruyorsa biraz incelttik */
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 700;
         }
 
         .user-points { 
@@ -151,17 +163,20 @@
             color: #5c704c; 
             background-color: #f8f5ee; 
             padding: 4px 10px; 
-            border-radius: 10px; }
+            border-radius: 10px; 
+        }
         
         .score-row.highlighted { 
             background-color: #e6cda3; 
-            border: 1px solid #d8bd93; }
+            border: 1px solid #d8bd93; 
+        }
 
         .score-row.highlighted .user-name,
         .score-row.highlighted .rank-number,
         .score-row.highlighted .user-points { 
             color: #333; 
-            font-weight: 700; }
+            font-weight: 700; 
+        }
 
         /* =========================================
            5. SABİT PUAN KUTUSU
@@ -181,11 +196,14 @@
             font-size: 14px; 
             box-sizing: border-box; 
             box-shadow: 0 -4px 10px rgba(0,0,0,0.15); 
-            z-index: 100; }
+            z-index: 100; 
+            overflow: visible !important; /* Üstteki fotoğraf butonunun kesilmemesi için */
+        }
 
         .sticky-left { 
             font-size: 14px; 
-            font-weight: 500; }
+            font-weight: 500; 
+        }
 
         .sticky-right { 
             font-size: 14px; 
@@ -193,14 +211,60 @@
             background-color: #f4cc3a; 
             color: #333; 
             padding: 6px 15px; 
-            border-radius: 15px; }
+            border-radius: 15px; 
+            margin-right: 32px; /* Sağ üstteki tür fotoğrafı butonuyla çakışmaması için boşluk */
+        }
 
         /* =========================================
-           6. ALT NAVİGASYON MENÜSÜ
+           6. SABİT KUTUNUN SAĞ ÜSTÜNDEKİ TÜR FOTOĞRAFI BUTONU
+           ========================================= */
+        .species-badge {
+            position: absolute;
+            top: -26px; /* Sabit yeşil kutunun hemen üstüne çıkar */
+            right: -6px; /* Sağ üst köşeye yerleşir */
+            width: 58px;
+            height: 58px;
+            background-color: #ffffff;
+            border: 3px solid #f4cc3a;
+            border-radius: 50%;
+            display: flex; /* Başlangıçtan itibaren görünür! */
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            overflow: hidden;
+            z-index: 999;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+        }
+
+        .species-badge:hover, .species-badge:active {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.45);
+        }
+
+        .species-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none; /* Resim başarıyla yüklendiğinde görünür olur */
+        }
+
+        .species-fallback {
+            font-size: 26px;
+            line-height: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* =========================================
+           7. ALT NAVİGASYON MENÜSÜ
            ========================================= */
         .bottom-nav { 
             position: absolute; 
-            bottom: 0; left: 0; 
+            bottom: 0; 
+            left: 0; 
             width: 100%; 
             height: 70px; 
             background-color: #29432f; 
@@ -211,7 +275,8 @@
             align-items: center; 
             padding: 0 10px; 
             z-index: 30; 
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.08); }
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08); 
+        }
 
         .nav-link { 
             flex: 1; 
@@ -219,18 +284,21 @@
             justify-content: center; 
             align-items: center; 
             text-decoration: none; 
-            height: 100%; }
+            height: 100%; 
+        }
 
         .nav-link img { 
             width: 50px; 
             height: 50px; 
             object-fit: contain; 
             opacity: 0.7; 
-            transition: opacity 0.2s ease; }
+            transition: opacity 0.2s ease; 
+        }
 
         .nav-link.active img { 
             opacity: 1; 
-            transform: scale(1.1); }
+            transform: scale(1.1); 
+        }
 
         .center-nav-btn { 
             position: relative; 
@@ -245,22 +313,21 @@
             align-items: center; 
             box-shadow: 0 8px 20px rgba(0,0,0,0.25); 
             text-decoration: none; 
-            z-index: 40; }
+            z-index: 40; 
+        }
 
         .center-nav-btn img { 
             width: 40px; 
             height: 40px; 
-            object-fit: contain; }
-
-            /* --- SKOR TABLOSU MEYVE İKONU --- */
-        .skor-meyve {
-            width: 35px; /* İsmin yanına tam sığacak zarif boyut */
-            height: 35px;
-            object-fit: contain;
-            /* Eğer arka planı silmeye üşenirsen diye, o sihirli blend kodunu buraya da ekliyorum: */
-            mix-blend-mode: multiply; 
+            object-fit: contain; 
         }
 
+        .skor-meyve {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+            mix-blend-mode: multiply; 
+        }
     </style>
 </head>
 <body>
@@ -281,7 +348,7 @@
 
             <!-- Sıralama Listesi -->
             <div class="score-list" id="gercekSkorListesi">
-                <!-- Javascript ile senin verin beyaz kutu olarak eklenecek -->
+                <!-- Javascript ile veriler buraya eklenecek -->
             </div>
         </main>
 
@@ -289,6 +356,14 @@
         <div class="sticky-user-score">
             <div class="sticky-left" id="skorUserRankText">📍 Sıralaman: <b>1. Sıradasın</b></div>
             <div class="sticky-right" id="skorUserPointsPill">0 YP</div>
+            
+            <!-- SABİT SKORUN HEMEN SAĞ ÜSTÜNDE DURAN TÜR FOTOĞRAFI BUTONU -->
+            <a href="https://www.iucnredlist.org" target="_blank" id="speciesBadgeLink" class="species-badge" title="Tür Bilgisini Gör">
+                <span id="speciesFallbackIcon" class="species-fallback">🐾</span>
+                <img id="speciesBadgeImg" alt="Tür" 
+                     onload="this.style.display='block'; document.getElementById('speciesFallbackIcon').style.display='none';" 
+                     onerror="this.style.display='none'; document.getElementById('speciesFallbackIcon').style.display='flex';">
+            </a>
         </div>
 
         <nav class="bottom-nav">
@@ -301,7 +376,7 @@
 
     </div>
 
-    <!-- GERÇEK ZAMANLI VERİTABANI BAĞLANTISI -->
+    <!-- GERÇEK ZAMANLI VERİTABANI BAĞLANTISI VE TÜR EŞLEŞTİRMESİ -->
     <script type="module">
         import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -320,17 +395,70 @@
         catch (e) { app = getApp(); }
         const db = getFirestore(app);
 
+        // İLK 50 SIRA İÇİN TÜRKİYE BİYOLOJİK ÇEŞİTLİLİK VE IUCN LİSTESİ
+        const speciesData = [
+            { rank: 1, name: "Hazar Kaplanı", scientific: "Panthera tigris virgata", status: "Nesli Tükendi (EX)", img: "images/turler/rank_1.jpg", url: "https://www.iucnredlist.org/search?query=Panthera%20tigris" },
+            { rank: 2, name: "Asya Fili (Anadolu)", scientific: "Elephas maximus", status: "Nesli Tükendi (EX)", img: "images/turler/rank_2.jpg", url: "https://www.iucnredlist.org/search?query=Elephas%20maximus" },
+            { rank: 3, name: "Kafkas Bizonu", scientific: "Bison bonasus caucasicus", status: "Nesli Tükendi (EX)", img: "images/turler/rank_3.jpg", url: "https://www.iucnredlist.org/search?query=Bison%20bonasus" },
+            { rank: 4, name: "Asya Aslanı", scientific: "Panthera leo persica", status: "Nesli Tükendi (EX)", img: "images/turler/rank_4.jpg", url: "https://www.iucnredlist.org/search?query=Panthera%20leo" },
+            { rank: 5, name: "Asya Çitası", scientific: "Acinonyx jubatus venaticus", status: "Nesli Tükendi (EX)", img: "images/turler/rank_5.jpg", url: "https://www.iucnredlist.org/search?query=Acinonyx%20jubatus" },
+            { rank: 6, name: "Orman Horozu", scientific: "Tetrao tetrix", status: "Türkiye'de Tükendi (EX)", img: "images/turler/rank_6.jpg", url: "https://www.iucnredlist.org/search?query=Lyrurus%20tetrix" },
+            { rank: 7, name: "Yılanboyun", scientific: "Anhinga rufa", status: "Türkiye'de Tükendi (EX)", img: "images/turler/rank_7.jpg", url: "https://www.iucnredlist.org/search?query=Anhinga%20rufa" },
+            { rank: 8, name: "Anadolu Leoparı", scientific: "Panthera pardus tulliana", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_8.jpg", url: "https://www.iucnredlist.org/search?query=Panthera%20pardus" },
+            { rank: 9, name: "Akdeniz Foku", scientific: "Monachus monachus", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_9.jpg", url: "https://www.iucnredlist.org/search?query=Monachus%20monachus" },
+            { rank: 10, name: "Toros Kurbağası", scientific: "Rana holtzi", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_10.jpg", url: "https://www.iucnredlist.org/search?query=Rana%20holtzi" },
+            { rank: 11, name: "Kelaynak", scientific: "Geronticus eremita", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_11.jpg", url: "https://www.iucnredlist.org/search?query=Geronticus%20eremita" },
+            { rank: 12, name: "Hatay Dağ Ceylanı", scientific: "Gazella gazella", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_12.jpg", url: "https://www.iucnredlist.org/search?query=Gazella%20gazella" },
+            { rank: 13, name: "Anadolu Dikenli Faresi", scientific: "Acomys cilicicus", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_13.jpg", url: "https://www.iucnredlist.org/search?query=Acomys%20cilicicus" },
+            { rank: 14, name: "Telli Turna", scientific: "Grus virgo", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_14.jpg", url: "https://www.iucnredlist.org/search?query=Anthropoides%20virgo" },
+            { rank: 15, name: "Sevgi Çiçeği", scientific: "Centaurea tchihatcheffii", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_15.jpg", url: "https://www.iucnredlist.org/search?query=Centaurea%20tchihatcheffii" },
+            { rank: 16, name: "Eber Sarısı", scientific: "Thermopsis turcica", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_16.jpg", url: "https://www.iucnredlist.org/search?query=Thermopsis%20turcica" },
+            { rank: 17, name: "Beypazarı Geveni", scientific: "Astragalus beypazaricus", status: "Kritik Tehlikede (CR)", img: "images/turler/rank_17.jpg", url: "https://www.iucnredlist.org/search?query=Astragalus%20beypazaricus" },
+            { rank: 18, name: "Anadolu Yaban Koyunu", scientific: "Ovis gmelinii anatolica", status: "Tehlikede (EN)", img: "images/turler/rank_18.jpg", url: "https://www.iucnredlist.org/search?query=Ovis%20gmelini" },
+            { rank: 19, name: "Çizgili Sırtlan", scientific: "Hyaena hyaena", status: "Tehlikede (EN)", img: "images/turler/rank_19.jpg", url: "https://www.iucnredlist.org/search?query=Hyaena%20hyaena" },
+            { rank: 20, name: "Yeşil Deniz Kaplumbağası", scientific: "Chelonia mydas", status: "Tehlikede (EN)", img: "images/turler/rank_20.jpg", url: "https://www.iucnredlist.org/search?query=Chelonia%20mydas" },
+            { rank: 21, name: "Nil Kaplumbağası", scientific: "Trionyx triunguis", status: "Tehlikede (EN)", img: "images/turler/rank_21.jpg", url: "https://www.iucnredlist.org/search?query=Trionyx%20triunguis" },
+            { rank: 22, name: "Fırat Kaplumbağası", scientific: "Rafetus euphraticus", status: "Tehlikede (EN)", img: "images/turler/rank_22.jpg", url: "https://www.iucnredlist.org/search?query=Rafetus%20euphraticus" },
+            { rank: 23, name: "Dikuyruk", scientific: "Oxyura leucocephala", status: "Tehlikede (EN)", img: "images/turler/rank_23.jpg", url: "https://www.iucnredlist.org/search?query=Oxyura%20leucocephala" },
+            { rank: 24, name: "Bozkır Kartalı", scientific: "Aquila nipalensis", status: "Tehlikede (EN)", img: "images/turler/rank_24.jpg", url: "https://www.iucnredlist.org/search?query=Aquila%20nipalensis" },
+            { rank: 25, name: "Küçük Akbaba", scientific: "Neophron percnopterus", status: "Tehlikede (EN)", img: "images/turler/rank_25.jpg", url: "https://www.iucnredlist.org/search?query=Neophron%20percnopterus" },
+            { rank: 26, name: "Ulu Doğan", scientific: "Falco cherrug", status: "Tehlikede (EN)", img: "images/turler/rank_26.jpg", url: "https://www.iucnredlist.org/search?query=Falco%20cherrug" },
+            { rank: 27, name: "Çoruh Engereği", scientific: "Vipera pontica", status: "Tehlikede (EN)", img: "images/turler/rank_27.jpg", url: "https://www.iucnredlist.org/search?query=Vipera%20pontica" },
+            { rank: 28, name: "Salda Dişlisazancığı", scientific: "Aphanius splendens", status: "Tehlikede (EN)", img: "images/turler/rank_28.jpg", url: "https://www.iucnredlist.org/search?query=Anatolichthys%20splendens" },
+            { rank: 29, name: "Şah Kartal", scientific: "Aquila heliaca", status: "Hassas (VU)", img: "images/turler/rank_29.jpg", url: "https://www.iucnredlist.org/search?query=Aquila%20heliaca" },
+            { rank: 30, name: "Toy Kuşu", scientific: "Otis tarda", status: "Hassas (VU)", img: "images/turler/rank_30.jpg", url: "https://www.iucnredlist.org/search?query=Otis%20tarda" },
+            { rank: 31, name: "Alageyik", scientific: "Dama dama", status: "Hassas (VU)", img: "images/turler/rank_31.jpg", url: "https://www.iucnredlist.org/search?query=Dama%20dama" },
+            { rank: 32, name: "Caretta Caretta", scientific: "Caretta caretta", status: "Hassas (VU)", img: "images/turler/rank_32.jpg", url: "https://www.iucnredlist.org/search?query=Caretta%20caretta" },
+            { rank: 33, name: "Urfa Ceylanı", scientific: "Gazella subgutturosa", status: "Hassas (VU)", img: "images/turler/rank_33.jpg", url: "https://www.iucnredlist.org/search?query=Gazella%20marica" },
+            { rank: 34, name: "Karakulak", scientific: "Caracal caracal", status: "Koruma Altında (TR)", img: "images/turler/rank_34.jpg", url: "https://www.iucnredlist.org/search?query=Caracal%20caracal" },
+            { rank: 35, name: "Vaşak", scientific: "Lynx lynx", status: "Koruma Altında (TR)", img: "images/turler/rank_35.jpg", url: "https://www.iucnredlist.org/search?query=Lynx%20lynx" },
+            { rank: 36, name: "Bozayı", scientific: "Ursus arctos", status: "Koruma Altında (TR)", img: "images/turler/rank_36.jpg", url: "https://www.iucnredlist.org/search?query=Ursus%20arctos" },
+            { rank: 37, name: "Avrasya Su Samuru", scientific: "Lutra lutra", status: "Tehdide Açık (NT)", img: "images/turler/rank_37.jpg", url: "https://www.iucnredlist.org/search?query=Lutra%20lutra" },
+            { rank: 38, name: "Çöl Varanı", scientific: "Varanus griseus", status: "Tehdide Açık (NT)", img: "images/turler/rank_38.jpg", url: "https://www.iucnredlist.org/search?query=Varanus%20griseus" },
+            { rank: 39, name: "Anadolu Semenderi", scientific: "Salamandra anatoliaca", status: "Hassas (VU)", img: "images/turler/rank_39.jpg", url: "https://www.iucnredlist.org/search?query=Salamandra%20infraimmaculata" },
+            { rank: 40, name: "Kafkas Semenderi", scientific: "Mertensiella caucasica", status: "Hassas (VU)", img: "images/turler/rank_40.jpg", url: "https://www.iucnredlist.org/search?query=Mertensiella%20caucasica" },
+            { rank: 41, name: "Şeritli Engerek", scientific: "Montivipera xanthina", status: "Koruma Altında (TR)", img: "images/turler/rank_41.jpg", url: "https://www.iucnredlist.org/search?query=Montivipera%20xanthina" },
+            { rank: 42, name: "Apollo Kelebeği", scientific: "Parnassius apollo", status: "Tehdide Açık (NT)", img: "images/turler/rank_42.jpg", url: "https://www.iucnredlist.org/search?query=Parnassius%20apollo" },
+            { rank: 43, name: "İstanbul Nazendesi", scientific: "Lathyrus undulatus", status: "Hassas (VU)", img: "images/turler/rank_43.jpg", url: "https://www.iucnredlist.org/search?query=Lathyrus%20undulatus" },
+            { rank: 44, name: "Antalya Çiğdemi", scientific: "Crocus antalyensis", status: "Hassas (VU)", img: "images/turler/rank_44.jpg", url: "https://www.iucnredlist.org/search?query=Crocus%20antalyensis" },
+            { rank: 45, name: "Ters Lale", scientific: "Fritillaria imperialis", status: "Hassas (VU)", img: "images/turler/rank_45.jpg", url: "https://www.iucnredlist.org/search?query=Fritillaria%20imperialis" },
+            { rank: 46, name: "Kazdağı Göknarı", scientific: "Abies nordmanniana", status: "Hassas (VU)", img: "images/turler/rank_46.jpg", url: "https://www.iucnredlist.org/search?query=Abies%20nordmanniana" },
+            { rank: 47, name: "Sığla Ağacı", scientific: "Liquidambar orientalis", status: "Hassas (VU)", img: "images/turler/rank_47.jpg", url: "https://www.iucnredlist.org/search?query=Liquidambar%20orientalis" },
+            { rank: 48, name: "Kasnak Meşesi", scientific: "Quercus vulcanica", status: "Hassas (VU)", img: "images/turler/rank_48.jpg", url: "https://www.iucnredlist.org/search?query=Quercus%20vulcanica" },
+            { rank: 49, name: "Kardelen", scientific: "Galanthus elwesii", status: "Tehdide Açık (NT)", img: "images/turler/rank_49.jpg", url: "https://www.iucnredlist.org/search?query=Galanthus%20elwesii" },
+            { rank: 50, name: "İnci Kefali", scientific: "Alburnus tarichi", status: "Tehdide Açık (NT)", img: "images/turler/rank_50.jpg", url: "https://www.iucnredlist.org/search?query=Alburnus%20tarichi" }
+        ];
+
         async function loadLeaderboard() {
             const listContainer = document.getElementById("gercekSkorListesi");
             const activeUser = localStorage.getItem("kampusUser") || "Öğrenci";
             let localPoints = localStorage.getItem("currentPoints") || "0";
 
             if (listContainer) {
-                listContainer.innerHTML = "<p style='text-align:center; color:#E2D3B7; font-size:14px; margin-top: 15px;'>Skorlar yükleniyor... ⏳</p>";
+                listContainer.innerHTML = "<p style='text-align:center; color:#5c704c; font-size:14px; margin-top: 15px;'>Skorlar yükleniyor... ⏳</p>";
             }
 
             try {
-                // Firebase'deki tüm kullanıcıları puanlarına göre yüksekten düşüğe doğru sıralayarak çağırıyoruz
                 const usersRef = collection(db, "users");
                 const q = query(usersRef, orderBy("currentPoints", "desc"));
                 const querySnapshot = await getDocs(q);
@@ -346,9 +474,8 @@
 
                     if (userName === activeUser) {
                         myRank = rank;
-                        localPoints = points; // Buluttaki kesin puanımızı cebe attık
+                        localPoints = points;
                         
-                        // Kendi satırımızı farklı renkte (Açık Yeşil) yapıyoruz ki hemen fark edilsin!
                         htmlContent += `
                             <div class="score-row" style="background-color: #d4edda; border: 2px solid #5c704c; color: #1A2E25;">
                                 <span>${rank}</span>
@@ -357,7 +484,6 @@
                             </div>
                         `;
                     } else {
-                        // Diğer kullanıcıların satırı standart görünüm
                         htmlContent += `
                             <div class="score-row">
                                 <span>${rank}</span>
@@ -371,23 +497,38 @@
 
                 if (listContainer) listContainer.innerHTML = htmlContent;
 
-                // Alttaki sabit kullanıcının yeşil/sarı bilgi kutucuklarını güvene alma
-                const rankEl = document.getElementById("skorUserRank");
-                const nameEl = document.getElementById("skorUserName");
-                const pointsEl = document.getElementById("skorUserPoints");
                 const rankTextEl = document.getElementById("skorUserRankText");
                 const pillEl = document.getElementById("skorUserPointsPill");
 
-                if(rankEl) rankEl.innerText = myRank;
-                if(nameEl) nameEl.innerText = `${activeUser} (Sen)`;
-                if(pointsEl) pointsEl.innerText = `${localPoints} YP`;
-                if(rankTextEl) rankTextEl.innerText = `Sıralaman: ${myRank}. Sıradasın`;
-                if(pillEl) pillEl.innerText = `${localPoints} YP`;
+                if (rankTextEl) rankTextEl.innerHTML = `📍 Sıralaman: <b>${myRank}. Sıradasın</b>`;
+                if (pillEl) pillEl.innerText = `${localPoints} YP`;
+
+                // --- SABİT SKORUN SAĞ ÜSTÜNDEKİ TÜR FOTOĞRAFI BUTONUNU GÜNCELLEME ---
+                const badgeLink = document.getElementById("speciesBadgeLink");
+                const badgeImg = document.getElementById("speciesBadgeImg");
+
+                if (myRank !== "-" && Number(myRank) <= 50) {
+                    const matchedSpecies = speciesData.find(species => species.rank === Number(myRank));
+                    
+                    if (badgeLink && matchedSpecies) {
+                        badgeLink.style.display = "flex";
+                        badgeLink.href = matchedSpecies.url;
+                        badgeLink.title = `${matchedSpecies.name} (${matchedSpecies.status}) - Bilgi için tıkla!`;
+                        
+                        if (badgeImg) {
+                            badgeImg.src = matchedSpecies.img;
+                            badgeImg.alt = matchedSpecies.name;
+                        }
+                    }
+                } else if (myRank !== "-" && Number(myRank) > 50) {
+                    // Sadece 50. sıradan gerideyse gizle
+                    if (badgeLink) badgeLink.style.display = "none";
+                }
 
             } catch (error) {
                 console.log("Skor tablosu çekilirken hata:", error);
                 if (listContainer) {
-                    listContainer.innerHTML = "<p style='text-align:center; color:#E2D3B7; margin-top: 15px;'>Skorlar yüklenemedi. İnternet bağlantınızı kontrol edin.</p>";
+                    listContainer.innerHTML = "<p style='text-align:center; color:#5c704c; margin-top: 15px;'>Skorlar yüklenemedi. İnternet bağlantınızı kontrol edin.</p>";
                 }
             }
         }

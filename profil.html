@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yeşil Kampüs - Profil ve Gelişim</title>
     <!-- Hesabı Sıfırlama Butonu -->
-    <button onclick="uretimiSifirla()" style="background-color: #E74C3C; color: white; border: none; padding: 8px 15px; border-radius: 10px; margin-top: 15px; font-weight: bold; cursor: pointer;">🔄 Üretimi Sıfırla</button>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -731,30 +730,6 @@
                 document.getElementById('bahcemContent').style.display = 'flex';
                 document.getElementById('tabBahcem').classList.add('active');
                 document.getElementById('tabSeram').classList.remove('active');
-            }
-        }
-
-        window.secretAddPoints = function() {
-            currentPoints += 500;
-            totalEarned += 500;
-            // Test için manuel ekleme yapıldığında listeye eklensin
-            aktiviteGecmisi.push({ eylem: "Gizli Puan Ödülü 🎁", puan: 500 });
-            // Liste çok uzamasın diye son 20 aktiviteyi tutalım
-            if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift(); 
-            
-            updateUI();
-            saveToCloud(); 
-        }
-
-        window.uretimiSifirla = async function() {
-            if(confirm("Meyve üretimini ve puanlarını sıfırlamak istediğine emin misin aşkım? 🌱\n(Sadece puanlar ve koleksiyon gidecek, hesabın kalacak)")) {
-                currentPoints = 0; totalEarned = 0; chosenSeed = null; meyveKoleksiyonu = []; aktiviteGecmisi = [];
-                localStorage.setItem('currentPoints', '0'); localStorage.setItem('totalEarned', '0');
-                localStorage.removeItem('kampusTohumu');
-                localStorage.setItem('meyveKoleksiyonu', JSON.stringify([]));
-                localStorage.setItem('aktiviteGecmisi', JSON.stringify([]));
-                updateUI(); await saveToCloud();
-                alert("Tertemiz bir başlangıç! Puanların ve meyvelerin sıfırlandı bebeğim ✨");
             }
         }
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Yeşil Kampüs - Görev Paneli</title>
+  <!-- Mevcut CSS dosyanı buraya bağlayarak arayüzü şekillendirebilirsin[cite: 1] -->
+</head>
+<body>
+  <div id="admin-container">
+    <h2>Yeni Haftalık Görev Ekle</h2>
+    <input type="text" id="taskTitle" placeholder="Görev Başlığı (Örn: Haftanın Keşfi)">
+    <textarea id="taskDesc" placeholder="Görev Açıklaması"></textarea>
+    <input type="number" id="ecoPoints" placeholder="Kazanılacak Yeşil Puan">
+    <button id="publishBtn">Görevi Yayınla</button>
+  </div>
+
+  <!-- Firebase ve JS bağlantıları sayfanın en altında olmalı -->
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
