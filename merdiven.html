@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yeşil Kampüs - Merdiven Kullanımı</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 📸 GERÇEK QR KOD OKUYUCU KÜTÜPHANESİ -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         /* =========================================
            GENEL AYARLAR VE SIFIRLAMA
-           Tüm elemanların boşluklarını sıfırlar.
            ========================================= */
         * {
             margin: 0;
@@ -19,7 +20,7 @@
         }
 
         body {
-            background-color: #333; /* Bilgisayarda arka planın koyu durması için */
+            background-color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,15 +29,14 @@
 
         /* =========================================
            MOBİL UYGULAMA ÇERÇEVESİ
-           Uygulama arka plan rengi (#f8f5ee - Krem/Bej)
            ========================================= */
         .app-container {
             position: relative;
             width: 100%;
-            max-width: 400px; /* Telefon ekranı genişliği sınırı */
+            max-width: 400px;
             height: 100vh;
             max-height: 850px;
-            background-color: #f8f5ee; /* Krem Zemin */
+            background-color: #f8f5ee;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -46,11 +46,9 @@
         /* =========================================
            ÜST YEŞİL BAŞLIK BARI (Header)
            ========================================= */
-        /* Diğer sayfalarındaki header'ı ana sayfa ile birebir aynı boyuta getiren kodlar */
-
         .top-header {
             background-color: #5c704c;
-            padding: 18px 20px 22px; /* Ana sayfadaki ile birebir aynı iç boşluk */
+            padding: 18px 20px 22px;
             border-bottom-left-radius: 28px;
             border-bottom-right-radius: 28px;
             display: flex;
@@ -59,15 +57,15 @@
             color: #ffffff;
             box-shadow: 0 4px 12px rgba(0,0,0,0.12);
             position: relative;
-            flex-shrink: 0; /* Küçülmesini veya genleşmesini engeller */
+            flex-shrink: 0;
             z-index: 10;
         }
 
         .back-btn {
             background: rgba(255, 255, 255, 0.2);
             border: none;
-            width: 38px;  /* 40px'den 38px'e düşürüldü (Ana sayfadaki menu-toggle ile aynı) */
-            height: 38px; /* 40px'den 38px'e düşürüldü */
+            width: 38px;
+            height: 38px;
             border-radius: 12px;
             display: flex;
             justify-content: center;
@@ -75,20 +73,20 @@
             cursor: pointer;
             text-decoration: none;
             color: white;
-            font-size: 18px; /* 20px'den 18px'e düşürüldü */
+            font-size: 18px;
             font-weight: bold;
         }
 
         .header-title {
-            font-size: 18px; /* 20px'den 18px'e düşürüldü, ana başlıkla aynı boy oldu */
+            font-size: 18px;
             font-weight: 700;
             letter-spacing: 0.5px;
             text-align: center;
         }
 
         .header-logo {
-            width: 35px;  /* 38px'den 35px'e düşürüldü */
-            height: 35px; /* 40px'den 35px'e düşürüldü */
+            width: 35px;
+            height: 35px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -105,7 +103,7 @@
            ========================================= */
         .main-content {
             flex: 1;
-            padding: 25px 20px 80px; /* Alt navigasyon barı için 80px boşluk */
+            padding: 25px 20px 80px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -136,7 +134,7 @@
             text-align: center;
         }
 
-        /* QR Kodu Görsel Kutusu */
+        /* QR Kodu Görsel ve Kamera Kutusu */
         .qr-image-box {
             width: 190px;
             height: 190px;
@@ -147,13 +145,28 @@
             align-items: center;
             margin-bottom: 15px;
             overflow: hidden;
-            border: 2px dashed #b8bc73; /* Tatlı kesikli çizgi çerçevesi */
+            border: 2px dashed #b8bc73;
+            position: relative;
         }
 
         .qr-image-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        /* Kamera Açıldığında Tam Oturması İçin */
+        #reader {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        #reader video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            border-radius: 14px;
         }
 
         .qr-info-text {
@@ -187,7 +200,7 @@
         .stat-icon {
             width: 38px;
             height: 38px;
-            background-color: #e6cda3; /* Yumuşak Bej İkon Kutusu */
+            background-color: #e6cda3;
             border-radius: 10px;
             display: flex;
             justify-content: center;
@@ -246,7 +259,7 @@
             left: 0;
             width: 100%;
             height: 70px;
-            background-color: #29432f; /* Bej Alt Bar */
+            background-color: #29432f;
             border-top-left-radius: 25px;
             border-top-right-radius: 25px;
             display: flex;
@@ -279,14 +292,13 @@
             transform: scale(1.1);
         }
 
-       /* Ortadaki Yeşil Yuvarlak (Ana Sayfa) Butonu */
         .center-nav-btn {
             position: relative;
-            top: -25px; /* Daha da yukarı fırladı */
-            width: 90px; /* Çapı büyütüldü */
-            height: 90px; /* Çapı büyütüldü */
+            top: -25px;
+            width: 90px;
+            height: 90px;
             background-color: #5c704c;
-            border: 5px solid #f8f5ee; /* Sayfa zemin rengiyle aynı çerçeve */
+            border: 5px solid #f8f5ee;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -295,7 +307,6 @@
             text-decoration: none;
             transition: transform 0.2s ease;
             z-index: 40;
-            
         }
 
         .center-nav-btn:active {
@@ -303,11 +314,10 @@
         }
 
         .center-nav-btn img {
-            width: 40px; /* İçindeki ikon daha büyük */
+            width: 40px;
             height: 40px;
             object-fit: contain;
         }
-
     </style>
 </head>
 <body>
@@ -316,9 +326,7 @@
         
         <header class="top-header">
             <a href="anasayfa.html" class="back-btn">←</a>
-
             <h1 class="header-title">Merdiven QR</h1>
-
             <div class="header-logo">
                 <img src="images/logo.png" alt="Logo" onerror="this.outerHTML='<span style=\'font-size:24px\'>🌿</span>'">
             </div>
@@ -330,13 +338,19 @@
                 <div class="qr-title">Adımlarını Enerjiye Dönüştür!</div>
                 
                 <div class="qr-image-box">
-                    <img src="images/merdiven_qr.png" alt="Merdiven QR Kodu" onerror="this.outerHTML='<div style=\'width:100%; height:100%; background:#f8f5ee; display:flex; align-items:center; justify-content:center; color:#5c704c; font-size:12px; text-align:center; padding:10px; font-weight:600;\'>Merdiven QR Kodu<br>(images/merdiven_qr.png)</div>'">
+                    <!-- Kamera Açıldığında QR Okuyucunun Yerleşeceği Alan -->
+                    <div id="reader"></div>
+
+                    <!-- Kamera Kapalıyken Görünecek Görsel Alanı -->
+                    <div id="placeholderContainer" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                        <img src="images/merdiven_qr.png" alt="Merdiven QR Kodu" onerror="this.outerHTML='<div style=\'width:100%; height:100%; background:#f8f5ee; display:flex; align-items:center; justify-content:center; color:#5c704c; font-size:12px; text-align:center; padding:10px; font-weight:600;\'>Merdiven QR Kodu<br>(images/merdiven_qr.png)</div>'">
+                    </div>
                 </div>
 
                 <p class="qr-info-text">
                     Fakülte ve binaların merdiven sahanlıklarında bulunan <b>QR kodları</b> tarat, asansör yerine merdiven kullanarak enerji tasarrufuna katkı sağla ve puan kazan!
                 </p>
-                <button id="openCameraBtn" style="background-color: #b8bc73; color: white; border: none; padding: 12px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px;">Kamerayı Aç ve QR Okut</button>
+                <button id="openCameraBtn" style="background-color: #b8bc73; color: white; border: none; padding: 12px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; transition: 0.2s;">Kamerayı Aç ve QR Okut</button>
             </div>
 
             <div class="stats-grid">
@@ -408,50 +422,95 @@
         </nav>
 
     </div>
+
+    <!-- 🧠 GERÇEK QR OKUYUCU VE PUAN MOTORU -->
     <script>
-        // KAMERA VE QR SİMÜLASYONU 
         const cameraBtn = document.getElementById('openCameraBtn');
-        const qrContainer = document.querySelector('.qr-image-box');
+        const readerDiv = document.getElementById('reader');
+        const placeholderContainer = document.getElementById('placeholderContainer');
+        
+        let html5QrCode;
+        let isScanning = false;
 
-        cameraBtn.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-                
-                qrContainer.innerHTML = '<video id="cameraVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>';
-                const videoElement = document.getElementById('cameraVideo');
-                videoElement.srcObject = stream;
-
-                cameraBtn.innerText = "Kamera Açık - QR Aranıyor...";
-                cameraBtn.style.backgroundColor = "#5c704c";
-
-                setTimeout(() => {
-                    const tracks = stream.getTracks();
-                    tracks.forEach(track => track.stop());
-                    
-                    qrContainer.innerHTML = '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#5cb85c; font-size:50px;">✅</div>';
-                    cameraBtn.innerText = "QR Başarıyla Okundu!";
-                    cameraBtn.style.backgroundColor = "#5cb85c";
-
-                    alert("Harika! İşlem başarılı, +15 YP kazandın! ♻️");
-
-                    let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
-                    let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0");
-                    localStorage.setItem("currentPoints", currentPoints + 15);
-                    localStorage.setItem("totalEarned", totalEarned + 15);
-
-                    // 🌟 YENİ SİHİR BURADA: Puan Geçmişi Listesine Ekleme!
-                    let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
-                    aktiviteGecmisi.push({ eylem: "Merdiven Kullanıldı 🪜", puan: 15 });
-                    if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
-                    localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
-
-                    if(window.bulutaPuanKaydet) window.bulutaPuanKaydet();
-
-                }, 3000); 
-
-            } catch (err) {
-                alert("Kamera izni alınamadı! 😔 Lütfen tarayıcı ayarlarından izin ver.");
+        cameraBtn.addEventListener('click', () => {
+            // Eğer kamera zaten açıksa, kullanıcı butona tekrar bastığında kamerayı kapatsın (İptal özelliği)
+            if (isScanning && html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    isScanning = false;
+                    readerDiv.style.display = 'none';
+                    placeholderContainer.style.display = 'flex';
+                    cameraBtn.innerText = "Kamerayı Aç ve QR Okut";
+                    cameraBtn.style.backgroundColor = "#b8bc73";
+                }).catch(err => console.error("Kamera kapatma hatası:", err));
+                return;
             }
+
+            isScanning = true;
+            placeholderContainer.style.display = 'none';
+            readerDiv.style.display = 'block';
+            cameraBtn.innerText = "Kamera Açık - QR Bekleniyor... (İptal)";
+            cameraBtn.style.backgroundColor = "#5c704c";
+
+            html5QrCode = new Html5Qrcode("reader");
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 140, height: 140 }, aspectRatio: 1.0 },
+                async (decodedText, decodedResult) => {
+                    // Gerçek bir QR kod okunduğu an burası tetiklenir!
+                    html5QrCode.stop().then(async () => {
+                        isScanning = false;
+                        
+                        const kazanilacakPuan = 15;
+
+                        readerDiv.style.display = 'none';
+                        placeholderContainer.style.display = 'flex';
+                        placeholderContainer.innerHTML = `
+                            <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#5cb85c; background:#f0f8f1; padding:10px;">
+                                <span style="font-size:48px; margin-bottom:5px;">✅</span>
+                                <span style="font-size:13px; font-weight:700; text-align:center;">Merdiven QR Okundu!</span>
+                            </div>`;
+                        
+                        cameraBtn.innerText = "Başarılı! +15 YP Eklendi";
+                        cameraBtn.style.backgroundColor = "#5cb85c";
+
+                        alert(`Harika! Merdiven QR kodunu başarıyla okuttun ve +${kazanilacakPuan} YP kazandın! 🪜🌿`);
+
+                        // 1. Puanı cihaz hafızasına ekle
+                        let currentPoints = parseInt(localStorage.getItem("currentPoints") || "0");
+                        let totalEarned = parseInt(localStorage.getItem("totalEarned") || "0");
+                        localStorage.setItem("currentPoints", currentPoints + kazanilacakPuan);
+                        localStorage.setItem("totalEarned", totalEarned + kazanilacakPuan);
+
+                        // 2. Puan Geçmişi Listesine Ekle
+                        let aktiviteGecmisi = JSON.parse(localStorage.getItem("aktiviteGecmisi")) || [];
+                        aktiviteGecmisi.push({ eylem: "Merdiven Kullanıldı 🪜", puan: kazanilacakPuan });
+                        if(aktiviteGecmisi.length > 20) aktiviteGecmisi.shift();
+                        localStorage.setItem("aktiviteGecmisi", JSON.stringify(aktiviteGecmisi));
+
+                        // 3. Buluta Kaydet
+                        if(window.bulutaPuanKaydet) await window.bulutaPuanKaydet();
+
+                        // 4. 3 Saniye sonra ekranı yeni bir okutma için eski haline döndür
+                        setTimeout(() => {
+                            placeholderContainer.innerHTML = `<img src="images/merdiven_qr.png" alt="Merdiven QR Kodu" onerror="this.outerHTML='<div style=\\'width:100%; height:100%; background:#f8f5ee; display:flex; align-items:center; justify-content:center; color:#5c704c; font-size:12px; text-align:center; padding:10px; font-weight:600;\\'>Merdiven QR Kodu<br>(images/merdiven_qr.png)</div>'">`;
+                            cameraBtn.innerText = "Kamerayı Aç ve QR Okut";
+                            cameraBtn.style.backgroundColor = "#b8bc73";
+                        }, 3000);
+
+                    }).catch((err) => { console.error("Kamera durdurulurken hata:", err); });
+                },
+                (errorMessage) => {
+                    // QR aranırken saniyede 10 kez burası çalışır, QR görene kadar sessizce bekler.
+                }
+            ).catch((err) => {
+                alert("Kamera başlatılamadı! 😔 Lütfen tarayıcı ayarlarından kameraya izin ver.");
+                isScanning = false;
+                placeholderContainer.style.display = 'flex';
+                readerDiv.style.display = 'none';
+                cameraBtn.innerText = "Kamerayı Aç ve QR Okut";
+                cameraBtn.style.backgroundColor = "#b8bc73";
+            });
         });
     </script>
     
@@ -480,7 +539,6 @@
 
             let currentPoints = parseInt(localStorage.getItem('currentPoints') || '0');
             let totalEarned = parseInt(localStorage.getItem('totalEarned') || '0');
-            // 🌟 YENİ SİHİR BURADA
             let aktiviteGecmisi = JSON.parse(localStorage.getItem('aktiviteGecmisi')) || []; 
             
             try {
